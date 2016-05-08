@@ -1,0 +1,17 @@
+#
+Le Lotus
+#
+
+Programme Python réalisé dans le cadre d'un projet UTCéen en partenariat avec le Théâtre Impérial de Compiègne.
+Ce programme traite des signaux en provenance d'un arduino, et y associe des effets lumineux et sonores.
+
+Bapt Abl, mai 2016.
+
+Lancer l'application avec
+  ./run.py
+Un fichier de log est accessible avec
+  tail -f app.log
+
+
+NOTE :
+    La gestion des erreurs est encore très incertaine. Lorsque le programme plante, le mieux est d'aller voir (systématiquement) le fichier de log même si l'appli ncurses ne vous dit rien... !
