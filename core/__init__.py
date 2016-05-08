@@ -3,7 +3,7 @@
 from daemons.input_arduino import daemon_arduino
 from daemons.output_graphic import daemon_curses
 from daemons.output_audio import daemon_audio
-from daemons.data_manager import daemon_data
+# from daemons.data_manager import daemon_data
 
 from threading import Thread
 from time import sleep
@@ -26,8 +26,10 @@ class core(Thread):
 
     '''
 
-    def __init__(self, SCR):
+    def __init__(self, SCR, arduino_port, arduino_speed):
         Thread.__init__(self)
+        self.arduino_port=arduino_port
+        self.arduino_speed=arduino_speed
         self.scr = SCR
         self.last_entry = "aucune"
         self.erreurs = "pas d'erreurs pour le moment"
@@ -40,25 +42,27 @@ class core(Thread):
 
         try:
             self.d_arduino = daemon_arduino(
-                core_ref=self
+                core_ref=self,
+                arduino_port=self.arduino_port,
+                arduino_speed=self.arduino_speed,
             )
             self.d_arduino.start()
 
-            self.d_data_manager = daemon_data(
-                core_ref=self,
-                d_arduino_ref=self.d_arduino
-            )
+            # self.d_data_manager = daemon_data(
+            #     core_ref=self,
+            #     d_arduino_ref=self.d_arduino
+            # )
 
             self.d_audio = daemon_audio(
                 core_ref=self,
-                d_data_ref=self.d_data_manager
+                # d_data_ref=self.d_data_manager
             )
             self.d_audio.start()
 
             self.d_curses = daemon_curses(
                 self.scr,
                 core_ref=self,
-                d_data_ref=self.d_data_manager
+                # d_data_ref=self.d_data_manager
             )
             self.d_curses.start()
 
@@ -85,7 +89,7 @@ class core(Thread):
 
 
         self.d_audio._Thread__stop()
-        self.d_data_manager._Thread__stop()
+        # self.d_data_manager._Thread__stop()
         self.d_arduino._Thread__stop()
         self.d_curses._Thread__stop()
 

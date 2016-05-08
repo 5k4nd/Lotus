@@ -12,8 +12,15 @@ from curses import wrapper
 
 def launch(scr):
     core(
-        SCR=scr,
+        arduino_port='/dev/ttyACM0',
+        arduino_speed=115200,
+        SCR=scr
     ).start()
 
 wrapper(launch)  # encapsulation pour curses
 
+"""
+ToDo:
+  * add a boolean for ncurses
+  * run python on multi-core
+"""

@@ -9,8 +9,11 @@ Bapt Abl, mai 2016.
 
 Lancer l'application avec
   ./run.py
+
 Un fichier de log est accessible avec
   tail -f app.log
+
+N'oubliez pas de configurer le port et la vitese de communication de votre arduino dans le run.py.
 
 
 NOTE :

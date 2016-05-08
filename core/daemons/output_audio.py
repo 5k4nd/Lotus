@@ -10,10 +10,10 @@ class daemon_audio(Thread):
 
     """
 
-    def __init__(self, core_ref, d_data_ref):
+    def __init__(self, core_ref):
         Thread.__init__(self)
         self.core = core_ref
-        self.d_data = d_data_ref
+        # self.d_data = d_data_ref
         try:
             mixer.init()
             self.core.logger.p_log('(AUDIO) init')
@@ -24,8 +24,8 @@ class daemon_audio(Thread):
     def run(self):
         mixer.music.load('data/naaru.mp3')
         mixer.music.play()
-        self.core.logger.p_log('(AUDIO) : coucou')
         while 1:
+            sleep(0.1)
             mixer.music.set_volume(
-                int(self.d_data.get_data_arduino('dist_sensor')) / 200.0
+                1 - ( int(self.core.d_arduino.data['capteur1']) / 120.0 )
             )

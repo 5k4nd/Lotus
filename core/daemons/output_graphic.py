@@ -20,11 +20,11 @@ class daemon_curses(Thread):
 
     '''
 
-    def __init__(self, scr, core_ref, d_data_ref):
+    def __init__(self, scr, core_ref):
         Thread.__init__(self)
         self.scr = scr
         self.core = core_ref
-        self.d_data = d_data_ref
+        # self.d_data = d_data_ref
         self.core.logger.p_log('(CURSES) init')
 
     def scr_init(self):
@@ -68,17 +68,18 @@ class daemon_curses(Thread):
                 except:
                     self.core.logger.p_log('(GRAPHIC) SCR_ERROR', error=exc_info())
                 try:
+                    capteur1 = int(self.core.d_arduino.data['capteur1'])
                     self.scr.addstr(6, 19,
-                        self.d_data.get_data_arduino('dist_sensor')
+                        # petit hack pour afficher un blanc sur le 3e caractère si < 100 i.e. trois caractères
+                        str(capteur1) + " "*(3-len(str(capteur1)))
                     )
                     self.scr.addstr(7, 19,str(
-                        int(self.d_data.get_data_arduino('dist_sensor'))/\
-                        200.0
+                            1 - ( capteur1 / 120.0 )
                         )
                     )
                     self.scr.addstr(13, 1, self.core.erreurs)
                 except:
-                    self.core.logger.p_log('(DATA) SCR_ERROR')
+                    self.core.logger.p_log('(GRAPHIC) SCR_ERROR', error=exc_info())
 
 
             except:

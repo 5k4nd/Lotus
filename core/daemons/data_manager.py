@@ -39,9 +39,8 @@ class daemon_data(Thread):
                 self.core.erreurs = "erreur dans input PC"
 
 
-    def get_data_arduino(self, var):
-        # à terme d_arduino.formated_data() doit renvoyer un dictionnaire des valeurs
-        return self.d_arduino.formated_data
+    def get_data_arduino(self, datum):
+        return self.d_arduino.formated_data[datum]
 
     def get_data_switch(self, switch_number):
         return self.data_switch[switch_number]

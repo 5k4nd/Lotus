@@ -1,5 +1,6 @@
 #include <CapacitiveSensor.h>
 #include <NewPing.h>
+
 //-----------------------capteurs---------------------------------------
 // capt1
 const int capt1_trigger_pin = 22 ;  // Arduino pin tied to trigger pin on the ultrasonic sensor.
@@ -90,21 +91,23 @@ void loop() {
 
     prendreMesures() ; // on mesure la distance du capteur
     ledRVBpwm(255, 255, 255) ;  // on éteint le bandeau
-    delay(capt1) ;  // on attends de la valeur du capteur
+    delay(capt1) ;  // on attend la valeur du capteur
     ledRVBpwm(0, 0, 0) ;  // on rallume le bandeau
     delay(capt1) ;   // on attends de la valeur du capteur
   }
   else
   {
-    Serial.print("mode 1 :") ;
+    //Serial.println("mode 1 :") ;
     prendreMesures() ;
-    valVert = capt1 ;
-    valBleu = capt1 ;
-    valRouge = capt1 ;
-    Serial.print("capteur 1 : " );
-    Serial.println(capt1) ;
+    //valVert = capt1 ;
+    //valBleu = capt1 ;
+    //valRouge = capt1 ;
+    if (1 == 1) { Serial.println(42); }
+    Serial.print("{'capteur1':" );
+    Serial.print(capt1);
+    Serial.println("}");
 
-    ledRVBpwm(valRouge * 3, valBleu * 3, valVert * 3) ; // on allume le bandeau avec une intensité proportionnelle au capteur
+    //ledRVBpwm(valRouge * 3, valBleu * 3, valVert * 3) ; // on allume le bandeau avec une intensité proportionnelle au capteur
     delay(200) ;
   }
 

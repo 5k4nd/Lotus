@@ -5,7 +5,8 @@ from threading import Thread
 from random import randint
 from time import sleep
 from sys import exc_info
-
+import serial  # arduino
+import ast  # for str to dict cast
 
 class daemon_arduino(Thread):
     '''reçoit des infos d'une carte Arduino via le protocole ???
@@ -14,38 +15,38 @@ class daemon_arduino(Thread):
 
     '''
 
-    def __init__(self, core_ref):
+    def __init__(self, core_ref, arduino_port, arduino_speed):
         Thread.__init__(self)
-        self.MIN = int(0)
-        self.MAX = int(200)
+        self.MAX = 120
+        self.ard_port=arduino_port
+        self.ard_speed=arduino_speed
         self.core = core_ref
         self.erreurs = "none"
-        self.raw_data = self.MAX
-        self.formated_data = self.MAX
-        self.core.logger.p_log('(ARDUINO) init')
-
-    def format_data(self, mode):
-        str_length = len(str(self.raw_data))
-        res = " "*(3-str_length) + str(self.raw_data) # for always having a 3 char long str
-        return res
+        self.data = {'capteur1': self.MAX}
+        try:
+            self.arduino = serial.Serial(self.ard_port, self.ard_speed)
+            self.core.logger.p_log('(ARDUINO) init')
+        except:
+            self.core.logger.p_log('(ARDUINO) serial_error')
 
 
     def run(self):
-        self.raw_data = self.MIN
         while 1:
-            sleep(.05)
-            # listen from arduino
-            if self.raw_data == 200:
-                self.raw_data = 0
-            else:
-                self.raw_data += 1
-            self.formated_data = self.format_data(self.raw_data)
-            
-            
+            sleep(.01)
 
-    def get_data_dist(self):
-        """distance should be between MIN and MAX
-        """
-        return self.formated_data
+            try:
+                # listen from arduino
+                got = self.arduino.readline()
+                got = got.replace(" ", "")  # remove blanks
+                got = ast.literal_eval(got)  # cast str to dict
+
+                # looking for the data we want
+                if "capteur1" in got.keys():
+                    self.data['capteur1'] = int(got['capteur1'])
+                    # self.data['capteur1'] = int(got['capteur1'])
+            except:
+                self.core.logger.p_log('(ARDUINO) data_error')
+
+
 
 
