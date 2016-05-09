@@ -7,20 +7,22 @@ Licence GNU GPL v3.
     Bapt Abl, 2016.
 """
 
+run_with_curses = True
+
+
+
 from core import core
-from curses import wrapper
 
 def launch(scr):
     core(
         arduino_port='/dev/ttyACM0',
         arduino_speed=115200,
-        SCR=scr
+        SCR=scr,
+        ncurses=run_with_curses
     ).start()
 
-wrapper(launch)  # encapsulation pour curses
-
-"""
-ToDo:
-  * add a boolean for ncurses
-  * run python on multi-core
-"""
+if run_with_curses:
+    from curses import wrapper
+    wrapper(launch)  # encapsulation pour curses
+else:
+    launch(False)

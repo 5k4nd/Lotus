@@ -73,6 +73,7 @@ class daemon_curses(Thread):
                         # petit hack pour afficher un blanc sur le 3e caractère si < 100 i.e. trois caractères
                         str(capteur1) + " "*(3-len(str(capteur1)))
                     )
+                    self.scr.addstr(7, 10, "volume : ")
                     self.scr.addstr(7, 19,str(
                             1 - ( capteur1 / 120.0 )
                         )

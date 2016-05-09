@@ -43,7 +43,8 @@ class daemon_arduino(Thread):
                 # looking for the data we want
                 if "capteur1" in got.keys():
                     self.data['capteur1'] = int(got['capteur1'])
-                    # self.data['capteur1'] = int(got['capteur1'])
+                    self.core.logger.p_log('(CAPTEUR1): ' + str(int(got['capteur1'])))
+
             except:
                 self.core.logger.p_log('(ARDUINO) data_error')
 
