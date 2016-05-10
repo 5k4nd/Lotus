@@ -3,8 +3,8 @@
 
 //-----------------------capteurs---------------------------------------
 // capt1
-const int capt1_trigger_pin = 22 ;  // Arduino pin tied to trigger pin on the ultrasonic sensor.
-const int capt1_echo_pin = 24 ; // Arduino pin tied to echo pin on the ultrasonic sensor.
+const int capt1_trigger_pin = 46 ;  // Arduino pin tied to trigger pin on the ultrasonic sensor.
+const int capt1_echo_pin = 52 ; // Arduino pin tied to echo pin on the ultrasonic sensor.
 /*
   // capt2
   const int capt2_trigger_pin = 26 ;
@@ -19,8 +19,7 @@ const int capt1_echo_pin = 24 ; // Arduino pin tied to echo pin on the ultrasoni
   const int capt4_echo_pin = 36 ;
 */
 //pétale
-//CapacitiveSensor petale = CapacitiveSensor(50,52) ; // résistance de 2,2K entre pin 50 et 52
-const int petale = 30 ;
+CapacitiveSensor petale = CapacitiveSensor(28,30) ; // résistance de 2,2K entre pin 50 et 52
 
 const int MAX_DISTANCE  = 200 ;// Maximum distance we want to ping for (in centimeters). Maximum sensor distance is rated at 400-500cm.
 
@@ -29,8 +28,8 @@ NewPing sonar1(capt1_trigger_pin, capt1_echo_pin, MAX_DISTANCE); // NewPing setu
 //NewPing sonar3(capt3_trigger_pin,capt3_echo_pin, MAX_DISTANCE);
 //NewPing sonar4(capt4_trigger_pin,capt4_echo_pin, MAX_DISTANCE);
 
-const int ledVert = 5; // Configuration de la broche 3 (PWM) de l'Arduino à ledVert
-const int ledRouge = 3; // Configuration de la broche 5 (PWM) de l'Arduino à ledRouge
+const int ledVert = 3; // Configuration de la broche 3 (PWM) de l'Arduino à ledVert
+const int ledRouge = 5; // Configuration de la broche 5 (PWM) de l'Arduino à ledRouge
 const int ledBleu = 6; // Configuration de la broche 6 (PWM) de l'Arduino à ledBleu
 
 unsigned int capt1 = 0 ;
@@ -51,7 +50,7 @@ void ledRVBpwm(int pwmRouge, int pwmVert, int pwmBleu) // reçoit valeur 0-255 p
   analogWrite(ledBleu, pwmBleu);
 }
 
-bool increment = false ;
+int increment = 1 ;
 int valBleu ;
 int valRouge ;
 int valVert ;
@@ -66,49 +65,79 @@ void prendreMesures()
 
 
 void setup() {
-  pinMode (petale, INPUT) ; // interrupteur pétale en entrée
-  digitalWrite(petale, HIGH) ; // on met une résistance de rappel
+//  pinMode (petale, INPUT) ; // interrupteur pétale en entrée
+//  digitalWrite(petale, HIGH) ; // on met une résistance de rappel
   pinMode (ledVert, OUTPUT); // Broche ledVert configurée en sortie
   pinMode (ledRouge, OUTPUT); // Broche ledRouge configurée en sortie
   pinMode (ledBleu, OUTPUT); // Broche ledBleu configurée en sortie
   Serial.begin(115200) ;
-  // petale.set_CS_AutocaL_Millis(0xFFFFFFFF) ;
+  petale.set_CS_AutocaL_Millis(0xFFFFFFFF) ;
  }
 
 
 
 void loop() {
-  // if (petale.capacitiveSensor(30)>100) increment=!increment ;
-  //if (digitalRead(petale)) increment = !increment ;
- // if (digitalRead(petale))
- // {
- //   increment = !increment ;// si on détecte le bouton, on inverse le programme
- //   delay(300) ;
- // }
-  if (increment)
-  {
-    Serial.println("mode 2") ;
+   if (petale.capacitiveSensor(30)>100) 
+   {
+    increment++ ;
+    delay(500) ;
+    if (increment == 4) increment = 1 ;
+   }
 
+  if (increment == 1)
+  {  
     prendreMesures() ; // on mesure la distance du capteur
     ledRVBpwm(255, 255, 255) ;  // on éteint le bandeau
     delay(capt1) ;  // on attend la valeur du capteur
     ledRVBpwm(0, 0, 0) ;  // on rallume le bandeau
     delay(capt1) ;   // on attends de la valeur du capteur
+    Serial.print("{'capteur1':" );
+    Serial.print(capt1);
+    Serial.println("}");
   }
-  else
+  else if (increment == 2)
   {
-    //Serial.println("mode 1 :") ;
     prendreMesures() ;
-    //valVert = capt1 ;
-    //valBleu = capt1 ;
-    //valRouge = capt1 ;
-    if (1 == 1) { Serial.println(42); }
+    valVert = capt1 ;
+    valBleu = capt1 ;
+    valRouge = capt1 ;
     Serial.print("{'capteur1':" );
     Serial.print(capt1);
     Serial.println("}");
 
-    //ledRVBpwm(valRouge * 3, valBleu * 3, valVert * 3) ; // on allume le bandeau avec une intensité proportionnelle au capteur
+    ledRVBpwm(255-capt1*3, 255-capt1*3, 255-capt1*3) ; // on allume le bandeau avec une intensité proportionnelle au capteur
     delay(200) ;
   }
-
+  else
+  {
+    int i ;
+    for( i = 0 ; i < 255 ; i+=10)
+    {
+      prendreMesures() ;
+      ledRVBpwm(i, 0,0) ;
+      delay(capt1) ;
+    Serial.print("{'capteur1':" );
+    Serial.print(capt1);
+    Serial.println("}");     
+    }
+      for(i = 0 ; i < 255 ; i+=10)
+    {
+      prendreMesures() ;
+      ledRVBpwm(0,0,i) ;
+      delay(capt1) ;
+    Serial.print("{'capteur1':" );
+    Serial.print(capt1);
+    Serial.println("}");
+    }
+        for( i = 0 ; i < 255 ; i+=10)
+    {
+      prendreMesures() ;
+      ledRVBpwm(0, i,0) ;
+      delay(capt1) ;
+      
+    Serial.print("{'capteur1':" );
+    Serial.print(capt1);
+    Serial.println("}");
+    }
+  }
 }
