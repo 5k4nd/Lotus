@@ -15,7 +15,7 @@ from logger_02 import LogFile
 
 from curses import endwin, A_NORMAL
 
-
+# le processus principal, qui gère tous les autres
 class core(Thread):
     '''thread principal, gère tous les autres threads à savoir :
     > contient la boucle infinie de capture de touche entrée au clavier.
@@ -30,7 +30,6 @@ class core(Thread):
         self.logger.initself()
         self.ncurses=ncurses
         if self.ncurses:
-        # on utilise ncurses, c'est pas très propre mais c'est joli
             self.scr = SCR
             self.last_entry = "aucune"
             self.erreurs = "pas d'erreurs pour le moment"
@@ -42,6 +41,7 @@ class core(Thread):
         self.logger.p_log('program started', newline=3)
 
         try:
+            # on lance le processus qui gère l'arduino
             self.d_arduino = daemon_arduino(
                 core_ref=self,
                 arduino_port=self.arduino_port,
@@ -49,11 +49,13 @@ class core(Thread):
             )
             self.d_arduino.start()
 
+            # on lance le processus qui gère l'audio
             self.d_audio = daemon_audio(
                 core_ref=self,
             )
             self.d_audio.start()
 
+            # on lance l'interface ncurses si l'utilisateur le veut
             if self.ncurses:
                 self.d_curses = daemon_curses(
                     self.scr,
@@ -66,9 +68,8 @@ class core(Thread):
             if self.ncurses:
                 self.d_curses.scr_init()
 
-                
             if self.ncurses:
-                # main ncurses loop
+                # boucle principale ncurses
                 while 1:
                     sleep(0.1)
                     self.scr.nodelay(1)  # rend getch() non-bloquant
@@ -84,6 +85,7 @@ class core(Thread):
                         if current_entry == 260:
                             self.last_entry = str(current_entry)
             else:
+                # instruction principale si ncurses est désactivé
                 print 'press ENTER to quit'
                 raw_input()
 
@@ -92,12 +94,17 @@ class core(Thread):
             self.logger.p_log('(CORE) ERROR in daemons init ', error=exc_info())
 
 
+        # on tue tous les processus, le plus proprement possible...
         self.d_audio._Thread__stop()
         self.d_arduino._Thread__stop()
 
         if self.ncurses:
             self.d_curses._Thread__stop()
             endwin()  # restaure le terminal à son état d'origine
+        
+        # fin du programme
         self.logger.p_log('program ends.')
+        
+        # on affiche les erreurs s'il y a
         print "traceback:"
-        traceback.print_exc()  # affiche exception si il y a
+        traceback.print_exc()

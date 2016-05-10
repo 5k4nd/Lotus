@@ -3,17 +3,25 @@
 from threading import Thread
 from sys import exc_info
 from time import sleep
+
+# on utilisera probablement plus cette lib plus tard !
 from pygame import mixer
 
+"""
+ToDo :
+  * chemin relatif pour accéder au dossier data/
+
+"""
+
 class daemon_audio(Thread):
-    """serveur de gestion de l'audio.
+    """Thread de gestion de l'audio
 
     """
 
     def __init__(self, core_ref):
         Thread.__init__(self)
         self.core = core_ref
-        # self.d_data = d_data_ref
+        self.volume = 0
         try:
             mixer.init()
             self.core.logger.p_log('(AUDIO) init')
@@ -26,6 +34,7 @@ class daemon_audio(Thread):
         mixer.music.play()
         while 1:
             sleep(0.1)
+            self.volume = 1 - ( int(self.core.d_arduino.data['capteur1']) / 100.0 )
             mixer.music.set_volume(
-                1 - ( int(self.core.d_arduino.data['capteur1']) / 120.0 )
+                self.volume
             )

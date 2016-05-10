@@ -24,12 +24,10 @@ class daemon_curses(Thread):
         Thread.__init__(self)
         self.scr = scr
         self.core = core_ref
-        # self.d_data = d_data_ref
         self.core.logger.p_log('(CURSES) init')
 
     def scr_init(self):
-        '''setup the curses (in fact: current terminal) screen at the firt
-            launch
+        '''initialistion de ncurses
 
         '''
         noecho()
@@ -52,40 +50,32 @@ class daemon_curses(Thread):
         # defines ncurses colors
         start_color()
         init_pair(1, COLOR_GREEN, COLOR_BLACK)
+        self.scr.addstr(2, 1, "touche <echap> pour quitter !")
 
     def run(self):
         while 1:
             sleep(0.1)
             try:
-                # on affiche la dernière touche entrée.
-                try:
-                    self.scr.addstr(2, 1, "press <echap> to quit")
-                    self.scr.addstr(4, 1, "derniere touche entree au clavier : ")
-                    printable_last_entry = str(self.core.last_entry)\
-                        + (5 - len(str(self.core.last_entry))) * " "
-                    self.scr.addstr(4, 37, printable_last_entry, A_NORMAL)
-                    self.scr.addstr(6, 1, "donnees arduino : ")
-                except:
-                    self.core.logger.p_log('(GRAPHIC) SCR_ERROR', error=exc_info())
-                try:
-                    capteur1 = int(self.core.d_arduino.data['capteur1'])
-                    self.scr.addstr(6, 19,
-                        # petit hack pour afficher un blanc sur le 3e caractère si < 100 i.e. trois caractères
-                        str(capteur1) + " "*(3-len(str(capteur1)))
-                    )
-                    self.scr.addstr(7, 10, "volume : ")
-                    self.scr.addstr(7, 19,str(
-                            1 - ( capteur1 / 120.0 )
-                        )
-                    )
-                    self.scr.addstr(13, 1, self.core.erreurs)
-                except:
-                    self.core.logger.p_log('(GRAPHIC) SCR_ERROR', error=exc_info())
+                self.scr.addstr(4, 1, "derniere touche entree au clavier : ")
+                self.scr.addstr(
+                    4,
+                    37,
+                    str(self.core.last_entry) + (5 - len(str(self.core.last_entry))) * " ",
+                    A_NORMAL
+                )
 
+                self.scr.addstr(6, 1, "donnees arduino : ")
+                capteur1 = int(self.core.d_arduino.data['capteur1'])
+                self.scr.addstr(6, 19,
+                    str(capteur1) + " "*(3-len(str(capteur1)))
+                )
+
+                self.scr.addstr(7, 10, "volume : ")
+                self.scr.addstr(7, 19,str(
+                        self.core.d_audio.volume
+                    )
+                )
 
             except:
-                self.core.erreurs = "> curses_error" + str(exc_info())
+                self.core.logger.p_log('(GRAPHIC) SCR_ERROR', error=exc_info())
 
-    def dataprint(self, data_type, data_content):
-        if data_type == 'key':
-            self.scr.addstr(2, 2, str(data_content))

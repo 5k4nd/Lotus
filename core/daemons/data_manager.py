@@ -3,6 +3,13 @@
 from threading import Thread
 from time import sleep
 
+"""
+ATTENTION CETTE CLASSE EST ACTUELLEMENT OBSOLÈTE EST N'EST PLUS UTILISÉE (questions d'optimisation)
+
+"""
+
+
+
 
 class daemon_data(Thread):
     '''thread gérant toutes les données, leur réception et leur acheminement

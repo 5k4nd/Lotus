@@ -9,15 +9,18 @@ import serial  # arduino
 import ast  # for str to dict cast
 
 class daemon_arduino(Thread):
-    '''reçoit des infos d'une carte Arduino via le protocole ???
-    une méthode get_data_dist (qui devra être publique ***ToDo!***) permet de récupérer la data formatée depuis l'extérieur
+    '''Thread de réception des données en provenance de la carte Arduino
+        via le protocole Serial de l'arduino (module pyserial côté python)
 
+        Note :
+          * côté Arduino, le mieux est d'envoyer depuis l'arduino Serial.print() sous la forme de dictionnaire python, c'est-à-dire
+          un couple (nom de variable, valeur) entre crochets exemple : {'capeur1' : 42}
 
     '''
 
     def __init__(self, core_ref, arduino_port, arduino_speed):
         Thread.__init__(self)
-        self.MAX = 120
+        self.MAX = 100  # valeur max du capteur pour l'initialisation : À SUPPRIMER après tests !
         self.ard_port=arduino_port
         self.ard_speed=arduino_speed
         self.core = core_ref
@@ -33,7 +36,6 @@ class daemon_arduino(Thread):
     def run(self):
         while 1:
             sleep(.01)
-
             try:
                 # listen from arduino
                 got = self.arduino.readline()
@@ -44,6 +46,9 @@ class daemon_arduino(Thread):
                 if "capteur1" in got.keys():
                     self.data['capteur1'] = int(got['capteur1'])
                     self.core.logger.p_log('(CAPTEUR1): ' + str(int(got['capteur1'])))
+                if "capteur2" in got.keys():
+                    # insérer ici n'importe quoi :-)
+                    a = 42
 
             except:
                 self.core.logger.p_log('(ARDUINO) data_error')
