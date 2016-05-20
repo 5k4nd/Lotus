@@ -1,51 +1,26 @@
-#include <CapacitiveSensor.h>
-#include <NewPing.h>
+//----------------------------------------librairies--------------------------------------
+
 #include "capt_ultr_son.h"
 #include "capt_capacitif.h"
-//-------------------------------------bandeau led------------------------------------------------
-const int ledVert = 5; // Configuration de la broche 3 (PWM) de l'Arduino à ledVert
-const int ledRouge = 3; // Configuration de la broche 5 (PWM) de l'Arduino à ledRouge
-const int ledBleu = 6; // Configuration de la broche 6 (PWM) de l'Arduino à ledBleu
-
-//----------------------------------------lotus--------------------------------------
-
-
+#include "bandeau_led.h"
+#include "ambiances.h"
 
 //-------------------------------------variables globales------------------------------------------
 
 unsigned int delais = 0 ;
 unsigned int temps ; 
-volatile int ambiance = -1 ; //chaque valeur de la variable correspond à une ambiance
-volatile int increment = -1 ;
+int ambiance = -1 ; //chaque valeur de la variable correspond à une ambiance
+int increment = 0 ;
 
-int valBleu ;
-int valRouge ;
-int valVert ;
 
-//------------------fonction pour colorer les led--------------------------------------
-void ledRVBpwm(int pwmRouge, int pwmVert, int pwmBleu) // reçoit valeur 0-255 par couleur
-{
-  analogWrite(ledRouge, pwmRouge);
-  analogWrite(ledVert, pwmVert);
-  analogWrite(ledBleu, pwmBleu);
-}
-
-//-----------------------fonction pour prendre les mesures de chaqque capteur
-void prendreMesures()
-{
-  capt1 = sonar1.ping_cm() ;
-  capt2 = sonar2.ping_cm() ;
-  capt3 = sonar3.ping_cm() ;
-  capt4 = sonar4.ping_cm() ;
-}
+float valrouge ;petale.set_CS_AutocaL_Millis(0xFFFFFFFF) ; // initialisation du capteur capacitif du lotus
+float valbleu ;
+float valvert ;
 
 
 
-// communication de l'ambiance avec le PC
-void envoyer_ambiance(int ambiance)
-{
-  
-}
+
+
 // communication valeurs capteurs pc
 void envoyer()
 {
@@ -55,58 +30,79 @@ void envoyer()
 void setup()
 {
 
-  Serial.begin(115200);// début de la communnication avec l'ordinateur
+  Serial.begin(115200);// début de la communication avec l'ordinateur avec une vitesse de 115200 (à synchroniser avec l'ordinateur)
   
-  pinMode (ledVert,OUTPUT); // Broche ledVert configurée en sortie
-  pinMode (ledRouge,OUTPUT); // Broche ledRouge configurée en sortie
-  pinMode (ledBleu,OUTPUT); // Broche ledBleu configurée en sortie
-
+  pinMode (LEDVERT,OUTPUT); // Broche ledVert configurée en sortie
+  pinMode (LEDROUGE,OUTPUT); // Broche ledRouge configurée en sortie
+  pinMode (LEDBLEU,OUTPUT); // Broche ledBleu configurée en sortie
+  petale.set_CS_AutocaL_Millis(0xFFFFFFFF) ; // initialisation du capteur capacitif du lotus
   temps = millis() ;
 }
 
 
-
+/**********************************problématique du temps réel multitache en monoprocessus********************************
+ * le problème devant faire un certain nombre d'action en simultané( allumage des led, prise de mesure des capteurs, dialogue avec l'ordinateur)
+ * on ne peut utiliser la fonction delay pour gerer le temps d'allumage des leds, celle-ci bloqurais le programme.
+ * 
+ * On utilise donc une alternative à cette fonction en créant une variable qui fera tourner un certain nombre de fois la boucle principale pour "attendre"
+ * On utilise par ailleurs la fonction serialEvent, déjà implémentées dans le langage arduino qui s'éxecute entre chaque boucle loop. 
+ * On va lui déleguer les prise de mesures et communication pour ne mettre que la gestion des led dans la boucle principale. 
+ * 
+ * 
+ * **********************************************principe du programme des leds********************************************
+ * la boucle principale est un choix entre les différentes ambiance que l'on aura codé au préalable.
+ * 
+ */
 
 
 
 void loop() {
   if (temps+delais>millis())
   {
-    prendreMesures() ;
-    envoyer() ;
     switch(ambiance)
     {
-      case 1 :
+/* ce programme fait fluctuer la couleur des bandeaux led en fonction du temps. 
+ * l'intensité globale est fonction de la distance des gens avec le capteur ultrason.
+ * 
+ */
+      case -1 ://avant d'avoir été touché une première fois
+
+       
+        increment++ ;
+        valrouge = (increment%100)*0.4)+capt1-20 ; // l'intensité varie périodiquement avec une phase décalée d'un tiers pour chaque couleur de led.
+        valbleu = ((increment+33)%100)*0.4+capt1-20 ; // l'intensité des led est compris entre capt1-20 et capt1+20 
+        valvert = ((increment+66)%100)*0.4+capt1-20 ;
+        ledpwm(int(valrouge),LEDROUGE) ; 
+        ledpwm(int(valvert),LEDVERT) ;
+        ledpwm(int(valbleu),LEDBLEU) ;
         
-        
-        /*
-        
-        on fait les traitements de la lumière en fonction des détections
+        delais = 50 ; 
+        break ;
+/*
+ * 
+ * 
+ * 
+ * 
+ */
+       case 2 :
 
 
-        */
-        
+
+
         break ;
 
-       default : 
-       prendreMesures() ;
-       envoyer() ;
-       valRouge = capt1 ;
-       valVert = capt1 ;
-       valBleu = capt1 ;
     }
   
-  
-  
-    increment++ ;
-    ledRVBpwm(valRouge, valVert, valBleu) ;
-    temps = millis() ;
+  temps = millis() ;
+
   }
   
 }
 
 
 void serialEvent() {
+  mesure_ultrason() ;
+  mesure_tactile() ;
 
   envoyer() ;
 
