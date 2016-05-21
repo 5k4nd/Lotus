@@ -32,40 +32,28 @@
  * 
  * : 12V, 0V et 6V pour l'exemple précédent (avec l'amplification)
  */
-
 #ifndef BANDEAU_LED
 #define BANDEAU_LED
 
+#if defined(ARDUINO) && ARDUINO >= 100
+#include "Arduino.h"    // for digitalRead, digitalWrite, etc
+#else
+#include "WProgram.h"
+#endif
 
 
-
-//----------------------definitions des broches associée au bandeau------------------------
-#define LEDVERT 5 // Configuration de la broche 3 (PWM) de l'Arduino à ledVert
-#define LEDROUGE 3 // Configuration de la broche 5 (PWM) de l'Arduino à ledRouge
-#define LEDBLEU 6 // Configuration de la broche 6 (PWM) de l'Arduino à ledBleu
-
-//const int bandeauPilier1[] = {LEDVERT,LEDROUGE,LEDBLEU} ;
-
-
-
-//------------------fonctions pour colorer les led--------------------------------------
-// on crée une fonction de controle fine pour chaque couleur de led et une plus générale par bandeau pour éviter de surcharger le code
-void ledpwm(int pwm, int bandeau) // reçoit valeur 0-255 et bandeau
+class bandeauLEDRGB
 {
-  constrain(pwm,0,255) ; // on bloque la valeur pwm entre 0 et 255
-  analogWrite(bandeau, pwm);// la fonction crée l'onde carrée de rapport pwm sur la sortie bandeau. l'onde sera modifiée au prochain appel de la fonction.
-}
-
-void ledRVBpwm(int pwmRouge,int pwmBleu,int pwmVert,int bandeau[3]) // reçoit les valeur pwm pour chaque couleur et le bandeau associé
-{
-  constrain(pwmRouge, 0,255) ;
-  constrain(pwmBleu, 0,255) ;
-  constrain(pwmVert, 0,255) ;
-  analogWrite(bandeau[0], pwmRouge);
-  analogWrite(bandeau[1], pwmBleu);
-  analogWrite(bandeau[2], pwmVert);
-}
-
-
+private :
+  bool active ;
+  uint8_t bandeauRGB[3] ; 
+public :
+  bandeauLEDRGB(uint8_t rouge, uint8_t vert, uint8_t bleu, bool activation) ;
+  void ledpwm(uint8_t pwm, uint8_t couleur) ;
+  void ledpwmRGB(uint8_t pwmRouge,uint8_t pwmBleu,uint8_t pwmVert) ;
+  bool istrue(void) ;
+  void settrue(bool valeur) ;
+  
+} ;
 
 #endif

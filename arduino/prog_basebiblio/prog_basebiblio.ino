@@ -2,8 +2,8 @@
 
 #include "capt_ultr_son.h"
 #include "capt_capacitif.h"
-#include "bandeau_led.h"
 #include "ambiances.h"
+#include <bandeauLEDRGB.h>
 
 /*******************************variables globales*****************************************/
 
@@ -25,32 +25,15 @@ float valvert ;
  * ces variables servent à activer des routines qui vont se rajouter aux ambiances en fonction des 
  * demandes de l'ordinateur comme faire briller les led avec la musique. 
  */
-//trois du pilier
-bool bandeau_pilier_1 = false ;
-bool bandeau_pilier_2 = false ;
-bool bandeau_pilier_3 = false ;
 
-// 4 extérieur plateforme
-bool bandeau_ext_1 = false ; 
-bool bandeau_ext_2 = false ;
-bool bandeau_ext_3 = false ;
-bool bandeau_ext_4 = false ;
+bandeauLEDRGB bandeau_pilier_1(3,5,6, false) ;
 
-// 4 intérieur plateforme
-bool bandeau_int_1 = false ; 
-bool bandeau_int_2 = false ;
-bool bandeau_int_3 = false ;
-bool bandeau_int_4 = false ;
-
-
-// 4 lotus
-bool bandeau_lotus_1 = false ; 
-bool bandeau_lotus_2 = false ;
-bool bandeau_lotus_3 = false ;
-bool bandeau_lotus_4 = false ;
 
 /******************************************************************************************************/
 // communication valeurs capteurs pc
+
+
+
 void envoyer()
 {
   
@@ -60,11 +43,9 @@ void setup()
 {
 
   Serial.begin(115200);// début de la communication avec l'ordinateur avec une vitesse de 115200 (à synchroniser avec l'ordinateur)
-  
-  pinMode (LEDVERT,OUTPUT); // Broche ledVert configurée en sortie
-  pinMode (LEDROUGE,OUTPUT); // Broche ledRouge configurée en sortie
-  pinMode (LEDBLEU,OUTPUT); // Broche ledBleu configurée en sortie
+ // bandeau_pilier_1.bandeauLEDRGB(3,5,6) ;
   petale1.set_CS_AutocaL_Millis(0xFFFFFFFF) ; // initialisation du capteur capacitif du lotus
+  bandeau_pilier_1.istrue() ;
   temps = millis() ;
 }
 
@@ -102,9 +83,9 @@ void loop() {
         valrouge = (increment%100)*0.4+capt1-20 ; // l'intensité varie périodiquement avec une phase décalée d'un tiers pour chaque couleur de led.
         valbleu = ((increment+33)%100)*0.4+capt1-20 ; // l'intensité des led est compris entre capt1-20 et capt1+20 
         valvert = ((increment+66)%100)*0.4+capt1-20 ;
-        ledpwm(int(valrouge),LEDROUGE) ; 
-        ledpwm(int(valvert),LEDVERT) ;
-        ledpwm(int(valbleu),LEDBLEU) ;
+        bandeau_pilier_1.ledpwm(int(valrouge),0) ; //  
+        bandeau_pilier_1.ledpwm(int(valvert),1) ;
+        bandeau_pilier_1.ledpwm(int(valbleu),2) ;
         
         delais = 50 ; 
         break ;
