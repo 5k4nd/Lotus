@@ -30,7 +30,6 @@
  *          ________________________________________
  * 255 ==> |                                        | ==> 5V    ==> amplification ==> 12V
  * 
- * : 12V, 0V et 6V pour l'exemple précédent (avec l'amplification)
  */
 #ifndef BANDEAU_LED
 #define BANDEAU_LED
@@ -41,18 +40,22 @@
 #include "WProgram.h"
 #endif
 
+enum Couleur { rouge, vert, bleu }; // on défini les trois couleurs du bandeau
+
 
 class bandeauLEDRGB
 {
 private :
   bool active ;
-  uint8_t bandeauRGB[3] ; 
+  uint8_t bandeauRGB[3] ; // tableau de trois int pour stocker le numéro des pins du bandeau : rouge==>0 vert ==>1 bleu==>2
 public :
-  bandeauLEDRGB(uint8_t rouge, uint8_t vert, uint8_t bleu, bool activation) ;
-  void ledpwm(uint8_t pwm, uint8_t couleur) ;
-  void ledpwmRGB(uint8_t pwmRouge,uint8_t pwmBleu,uint8_t pwmVert) ;
-  bool istrue(void) ;
-  void settrue(bool valeur) ;
+  
+  bandeauLEDRGB(uint8_t rouge, uint8_t vert, uint8_t bleu, bool activation) ; // donne les valeurs des pins à utiliser pour chaque couleur
+  bandeauLEDRGB(uint8_t rouge, uint8_t vert, uint8_t bleu) ;
+  void ledpwm(uint8_t pwm, Couleur coul) ; // commande fine d'une couleur du bandeau
+  void ledpwmRGB(uint8_t pwmRouge,uint8_t pwmBleu,uint8_t pwmVert) ; // commande générale des trois couleurs du bandeau
+  bool istrue(void) ; // renvoi la valeur de active
+  void settrue(bool valeur) ; // change la valeur de active
   
 } ;
 
