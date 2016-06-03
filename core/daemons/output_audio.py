@@ -34,7 +34,7 @@ class daemon_audio(Thread):
         mixer.music.play()
         while 1:
             sleep(0.1)
-            self.volume = 1 - ( int(self.core.d_arduino.data['capteur1']) / 100.0 )
+            self.volume = 1 - ( int(self.core.d_arduino.data['capteur1']) / 200.0 )
             mixer.music.set_volume(
                 self.volume
             )

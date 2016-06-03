@@ -2,12 +2,23 @@
 Le Lotus
 #       #
 
-Programme Python réalisé dans le cadre d'un projet UTCéen en partenariat avec le Théâtre Impérial de Compiègne.
-Ce programme traite des signaux en provenance d'un arduino, et y associe des effets lumineux et sonores.
-
-Bapt Abl, mai 2016.
+Programme réalisé dans le cadre d'un projet UTCéen en partenariat avec le Théâtre Impérial de Compiègne.
+Codé en Python 2 et en C, l'application finale tourne simultanément sur un Raspberry Pi et une carte Arduino. Le pi traite des signaux en provenance de l'arduino, et y associe des effets lumineux et sonores, pendant que ce dernier gère les ambiances de LEDs.
 
 
+
+
+Architecture du projet :
+-- arduino/     contient le code arduino
+-- core/        contient le code python
+-- data/        contient l'ensemble des fichiers utilisés par le pi, notamment la musique et la vidéo
+
+
+
+
+####################################
+######### pour le python
+####################################
 
 Lancer l'application avec
   ./run.py

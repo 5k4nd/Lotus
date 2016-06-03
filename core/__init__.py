@@ -35,7 +35,6 @@ class core(Thread):
             self.erreurs = "pas d'erreurs pour le moment"
 
 
-
     def run(self):
 
         self.logger.p_log('program started', newline=3)
@@ -81,15 +80,21 @@ class core(Thread):
 
                         if current_entry == 27:  # <échap>  # ord('q')
                             break
-                    else:
-                        if current_entry == 260:
+                        elif current_entry == 258:
+                            self.d_arduino.data['capteur1'] -= 10
                             self.last_entry = str(current_entry)
+                        elif current_entry == 259:
+                            self.d_arduino.data['capteur1'] += 10
+                            self.last_entry = str(current_entry)
+                    else:
+                        foo = 42
+                        # toutes les touches spéciales !
             else:
                 # instruction principale si ncurses est désactivé
                 print 'press ENTER to quit'
                 raw_input()
 
-                    
+
         except:
             self.logger.p_log('(CORE) ERROR in daemons init ', error=exc_info())
 
