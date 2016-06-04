@@ -5,7 +5,7 @@ from sys import exc_info
 from time import sleep
 
 # on utilisera probablement plus cette lib plus tard !
-from pygame import mixer
+# from pygame import mixer
 
 """
 ToDo :
@@ -23,18 +23,18 @@ class daemon_audio(Thread):
         self.core = core_ref
         self.volume = 0
         try:
-            mixer.init()
+            # mixer.init()
             self.core.logger.p_log('(AUDIO) init')
         except:
             self.core.logger.p_log('(AUDIO) sound init error', error=exc_info())
 
 
     def run(self):
-        mixer.music.load('data/naaru.mp3')
-        mixer.music.play()
+        # mixer.music.load('data/naaru.mp3')
+        # mixer.music.play()
         while 1:
             sleep(0.1)
             self.volume = 1 - ( int(self.core.d_arduino.data['capteur1']) / 200.0 )
-            mixer.music.set_volume(
-                self.volume
-            )
+            # mixer.music.set_volume(
+            #     self.volume
+            # )

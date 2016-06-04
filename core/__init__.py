@@ -54,6 +54,12 @@ class core(Thread):
             )
             self.d_audio.start()
 
+            # on lance le processus qui gère l'audio
+            self.d_audio = daemon_audio(
+                core_ref=self,
+            )
+            self.d_audio.start()            
+
             # on lance l'interface ncurses si l'utilisateur le veut
             if self.ncurses:
                 self.d_curses = daemon_curses(
