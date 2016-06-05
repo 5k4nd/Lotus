@@ -1,0 +1,11 @@
+defusedxml==0.4.1
+Magic-file-extensions==0.2
+mercurial==3.7.3
+numpy==1.11.0
+pygame===1.9.1release
+pyliblzma==0.5.3
+pyserial==3.1
+pySFML==2.2.0
+SOAPpy==0.12.22
+vboxapi==1.0
+wstools==0.4.3
