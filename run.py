@@ -1,4 +1,4 @@
-#!venv/bin/python2
+#!env/bin/python2
 # -*- coding: utf8 -*-
 
 """

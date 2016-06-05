@@ -56,10 +56,10 @@ class core(Thread):
             self.d_audio.start()
 
             # on lance le processus qui gère la sfml
-            # self.d_sfml = daemon_visuels(
-            #     core_ref=self,
-            # )
-            # self.d_sfml.start()            
+            self.d_sfml = daemon_visuels(
+                core_ref=self,
+            )
+            self.d_sfml.start()            
 
             # on lance l'interface ncurses si l'utilisateur le veut
             if self.ncurses:
@@ -93,12 +93,12 @@ class core(Thread):
                         elif current_entry == 259:
                             self.d_arduino.data['capteur1'] += 10
                             self.last_entry = str(current_entry)
-                        elif current_entry == 97:
+                        elif current_entry == ord('a'):
                             self.d_audio.current = "ambiance"
-                        elif current_entry == 122:
-                            self.d_audio.current = "deux"
-                        elif current_entry == 101:
-                            self.d_audio.current = "trois"
+                        elif current_entry == ord('z'):
+                            self.d_audio.current = "scene1"
+                        elif current_entry == ord('e'):
+                            self.d_audio.current = "scene2"
                     else:
                         foo = 42
                         # toutes les touches spéciales !
@@ -115,7 +115,7 @@ class core(Thread):
         # on tue tous les processus, le plus proprement possible...
         self.d_audio._Thread__stop()
         self.d_arduino._Thread__stop()
-        # self.d_sfml._Thread__stop()
+        self.d_sfml._Thread__stop()
 
         if self.ncurses:
             self.d_curses._Thread__stop()

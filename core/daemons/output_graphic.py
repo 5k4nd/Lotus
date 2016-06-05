@@ -76,6 +76,13 @@ class daemon_curses(Thread):
                     )
                 )
 
+                self.scr.addstr(9, 1, "choisissez une ambiance (scene) : ")
+                self.scr.addstr(10, 1, "(touches a, z ou e)")
+                self.scr.addstr(9, 35,str(
+                        self.core.d_audio.current + " "*10  # truc dégueux pour nettoyer les vieux caractères
+                    )
+                )
+
             except:
                 self.core.logger.p_log('(GRAPHIC) SCR_ERROR', error=exc_info())
 

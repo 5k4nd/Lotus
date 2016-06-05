@@ -1,15 +1,97 @@
 #!/usr/bin/python2
 # -*- coding: utf8 -*-
 
+from threading import Thread
+from sys import exc_info
+from time import sleep
 
 import sfml as sf
 from sfml.graphics import *
-from time import sleep
+from sfml.window import *
 
-from threading import Thread
 
 # documentation utilisée: http://www.python-sfml.org/api/graphics.html , 
 # http://python-sfml.org/tutorials.html#graphics , http://python-sfml.org/examples.html
+
+##########classe image############
+class Image():
+    
+    # attributs
+    rouge = 255
+    vert = 255
+    bleu = 255
+    fondu = 255
+    
+    # méthodes
+    def __init__(self, img): # int rvb, str img
+        try:
+            self.img = Sprite(Texture.from_file(img))
+        # except IOError: self.img = Sprite(Texture.from_file("../data/visuel/img.jpg")) # image de secours 
+        except:
+            print "impossible de charger l'image"
+
+    def dessiner(self, window, view, img1): # pour afficher les modifications
+    # attention cette fonction est dupliquée !
+        window.view = view
+        window.clear()
+        window.draw(img1.img) # image du fond
+        window.draw(img1.img) # image par dessus
+        window.display()
+            
+    def secousse(self, amplitude): # simule une secousse (tremblement de l'img)
+        view.move(amplitude,amplitude)
+        dessiner()
+        sleep(SLEEP)
+        view.move(-amplitude,-amplitude)
+        dessiner()
+        sleep(SLEEP)
+        view.move(amplitude,amplitude)
+        dessiner()
+        sleep(SLEEP)
+        view.move(-amplitude,-amplitude)
+        dessiner()
+        sleep(SLEEP)
+    
+    def setCouleur(self, rouge, vert, bleu):
+        self.rouge = rouge
+        self.vert = vert
+        self.bleu = bleu
+    
+    def couleur(self): # pour modifier la couleur globale de l'image, et donc l'assortir à l'ambiance
+        self.img.color = Color(self.rouge, self.vert, self.bleu, self.fondu) 
+        
+    def disparitionFondu(self, window, view, ROTATION, ZOOM, SLEEP, img1): # transition en fondu vers transparence
+        while (self.rouge!=0 or self.vert!=0 or self.bleu!=0 or self.fondu!=0):
+            sleep(SLEEP)
+            if (self.rouge!=0):
+                self.rouge-=1
+            if (self.vert!=0):
+                self.vert-=1
+            if (self.bleu!=0):
+                self.bleu-=1
+            if (self.fondu!=0):
+                self.fondu-=1
+            view.rotate(ROTATION)
+            view.zoom(ZOOM) # zoom avant lent
+            self.couleur()
+            self.dessiner(window, view, img1)
+            
+    def apparitionFondu(self, window, view, ROTATION, ZOOM, SLEEP, img1): # transition en fondu vers l'image
+        while (self.rouge!=255 or self.vert!=255 or self.bleu!=255 or self.fondu!=255):
+            sleep(SLEEP)
+            if (self.rouge!=255):
+                self.rouge+=1
+            if (self.vert!=255):
+                self.vert+=1
+            if (self.bleu!=255):
+                self.bleu+=1
+            if (self.fondu!=255):
+                self.fondu+=1
+            view.rotate(ROTATION)
+            view.zoom(ZOOM) # zoom avant lent
+            self.couleur()
+            self.dessiner(window, view, img1)
+
 
 
 class daemon_visuels(Thread):
@@ -27,130 +109,119 @@ class daemon_visuels(Thread):
         Thread.__init__(self)
         self.core = core_ref
         self.must_end = False
+        self.image1 = "data/visuel/img.jpg"
 
-        #taille de la fenetre
-        self.X = 600
-        self.Y = 600
+    def run(self):
+        self.core.logger.p_log('(SFML) COUCOU')
 
-        # émule les données de l'arduino ou du pc:
-        self.a = 0
-        self.r = 255
-        self.v = 255
-        self.b = 255
-        self.f = 150 # opacité (nécessite également de baisser les couleurs): 0 = transparent, 255 = opaque (noir)
+        def dessiner(window, view, img1): # pour afficher les modifications
+            window.view = view
+            window.clear()
+            window.draw(img1.img) # image du fond
+            window.draw(img1.img) # image par dessus
+            window.display()
+
+        def alterner(temps, window, view, ROTATION, ZOOM, SLEEP, img1):
+            if (temps % 100 == 0):
+                img2.apparitionFondu(window, view, ROTATION, ZOOM, SLEEP, img1)
+            elif (temps % 50 == 0):
+                img2.disparitionFondu(window, view, ROTATION, ZOOM, SLEEP, img1)
+        '''
+        exemple:
+        img1 est bleue
+        img2 est rouge
+        img2 disparait et apparait: on voit l'image passer du rouge au bleu etc
+        '''
+
 
         try:
-            ##########initialisation##########
+            ##########Initialisation##########
+
+            ROTATION = 0.01
+            ZOOM = .9996
+            SLEEP = .01
+
+            #taille de la fenetre
+            width = 600
+            height = 600
+
+            # émule la donnée de l'arduino ou du pc
+            pic = 0 
+            ambiance = 1
+
+            # var de temps pour par exemple bataille rouge/bleu
+            temps = 0 
 
 
             # création de la fenetre d'affichage
-            window = RenderWindow(sf.window.VideoMode(self.X, self.Y), "pySFML Window")
-
-            try:# importe l'image
-                sprite = Sprite(Texture.from_file("img.jpg"))
-                sprite2 = Sprite(Texture.from_file("img2.jpg"))
-            except IOError:
-                print("Erreur chargement image") # à modifier pour avoir une solution de secours et continuer le prog
-
-            # configure la vue 
+            window = RenderWindow(VideoMode(width, height), "pySFML Window")
+            # configure la vue
             view = View()
             view.reset(Rectangle((50, 50), (550, 550)))
             #view.center((200, 200)) #todo: centrer la vue sur le centre de rotation, il faudra surement definir une taille d'img et fenetre constantes
-
             self.core.logger.p_log('(SFML) init')
 
         except:
             self.core.logger.p_log('(SFML) init error', error=exc_info())
 
 
+        ##########Boucle principale:########## 
 
-    ##########Fonctions: effets sur l'image en temps réel##########
-    def dessiner(): # pour afficher les modifications
-        window.view = view
-        window.clear()
-        window.draw(sprite2)
-        window.draw(sprite)
-        window.display()
-        
-    def secousse(amplitude): # simule une secousse (tremblement de l'img)
-        view.move(amplitude,amplitude)
-        dessiner()
-        sleep(0.1)
-        view.move(-amplitude,-amplitude)
-        dessiner()
-        sleep(0.1)
-        view.move(amplitude,amplitude)
-        dessiner()
-        sleep(0.1)
-        view.move(-amplitude,-amplitude)
-        dessiner()
-        sleep(0.1)
+        while not(self.must_end):
+            try:
+                ##########Ambiances############
 
-    def couleur(rouge, vert, bleu, fondu): # pour modifier la couleur globale de l'image, et donc l'assortir à l'ambiance
-       sprite.color = Color(rouge, vert, bleu, fondu) 
-       # attention, va simplement supprimer les couleurs selon les niveaux demandés (ex: (0,255,255,255) supprimera le rouge)
-       # ne transforme pas l'image en profondeur: on retrouve l'image d'origine en réutilisant la fonction avec (255, 255, 255, 255)
-       
+                #ambiance = PCtoPC(); # on récupère à chaque boucle la donnée PC - TODO: PCtoPC()
+                if (ambiance == -1):
+                    # s'il n'y a pas de nouvelle donnée d'ambiance (-1) on ne fait rien
+                    pass
+                elif (ambiance == 0):
+                    # ambiance de base
+                    img1 = Image(self.image1)
+                    img2 = Image(self.image1)
+                    alternance = False
+                
+                elif (ambiance == 1):
+                    # ambiance bataille rouge/bleu
+                    img1 = Image(self.image1)
+                    img2 = Image(self.image1)
+                    img1.setCouleur(0, 100, 255);
+                    img2.setCouleur(255, 100, 0);
+                    alternance = True # une fonction appelée à chaque boucle
+                    ambiance = -1 # emule donnee revenant à -1
+                    
+                elif (ambiance == 2):
+                    # ambiance mer
+                    img1 = Image(self.image1)
+                    img2 = Image(self.image1)
+                    alternance = False
+                # si aucune des ambiances programmées ne correspond à la donnée reçue, on ne modifie rien
+                
 
-    # changement d'image (quand changement d'ambiance)
-    def choixImage(name):
-        sprite = Sprite(Texture.from_file(name + ".jpg")) # ne fonctionne pas
-        # todo: reussir à vraiment modifier le sprite (modif la variable globale) + ajouter un try
 
-    def transition(r,v,b,f): # transition en fondu vers transparence
-        while (r!=0 or v!=0 or b!=0 or f!=0):
-            if (r!=0):
-                r-=1;
-            if (v!=0):
-                v-=1;
-            if (b!=0):
-                b-=1;
-            if (f!=0):
-                f-=1;
-            couleur(
-                self.r,
-                self.v,
-                self.b,
-                self.f
-            )
-            dessiner()
-        # à mieux implémenter selon ce qu'on veut: une transition qu'entre deux scènes, ou dans une même scène entre deux images/couleurs..
-        # possibilité de continuer à zoomer grâce à un booleen: ebauche d'algo:
-        '''
-        transi := vrai
-        if transi == vrai
-            if r ou v ou b ou f != 0
-                décrémenter 
-            else
-                transi := faux
-        '''
+                # émule donnée arduino ou pc
+                pic += 1 
+                temps += 1
 
 
 
-##########Boucle principale:########## 
-    def run(self):
-        while window.is_open:
-            if must_end == True:
-                window.close()
-                pass
-           
-            self.a = self.a+1 # émule donnée arduino ou pc
-              
-            if (self.a % 100 == 0):
-               secousse(2)
+                # if (pic % 200 == 0):
+                #    img1.secousse(2)
+                #    img2.secousse(2)
+                
+                
+                if (alternance):
+                    alterner(temps, window, view, ROTATION, ZOOM, SLEEP, img1)
+                
+                view.rotate(ROTATION)
 
-            if (self.a==100): # todo: modifier le max de taille de texture qui est actuellement 8192x8192
-               #choixImage("img2") #permet de demander l'image selon un code numerique, ex: 001, 002, etc ; todo: ne marche pas (var glob)
-               #couleur(r, v, b, f)
-               transition(255,255,255,255)
+                #view.zoom(1.0001) # zoom arrière lent
+                view.zoom(ZOOM) # zoom avant lent
+                sleep(SLEEP)
 
 
-            view.rotate(0.01)
+                dessiner(window, view, img1)
+            except:
+                self.core.logger.p_log('(SFML) error', error=exc_info())
 
-            #view.zoom(1.0001) # zoom arrière lent
-            view.zoom(0.9996) # zoom avant lent
-
-            dessiner() 
-
-
-
+        window.close()

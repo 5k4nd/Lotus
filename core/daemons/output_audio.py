@@ -23,8 +23,8 @@ class daemon_audio(Thread):
         self.core = core_ref
         self.volume = 0
         self.ambiances = {
-            'ambiance': "/home/bat/Abelum/code/Lotus/data/audio/scene_0_ambiance/naaru_old.mp3",
-            'deux': "data/audio/03 The Offering.mp3"
+            'ambiance': "data/audio/naaru.mp3",
+            'scene1': "data/audio/03 The Offering.mp3"
         }
         self.current = "ambiance"
         self.old = "ambiance"
