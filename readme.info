@@ -42,3 +42,16 @@ vous pouvez :
         run_with_curses = False
 
 
+
+lancer l'application dans un environnement virtuel :
+  virtualenv env
+
+se placer dans cet environnement :
+  source env/bin/activate
+
+installer les modules python :
+  pip install -r requirements.txt
+
+pour sortir du virtualenv :
+  deactivate
+
