@@ -47,15 +47,17 @@ class daemon_visuels(Thread):
             window = RenderWindow(sf.window.VideoMode(self.X, self.Y), "pySFML Window")
 
             try:# importe l'image
-             sprite = Sprite(Texture.from_file("img.jpg"))
-             sprite2 = Sprite(Texture.from_file("img2.jpg"))
+                sprite = Sprite(Texture.from_file("img.jpg"))
+                sprite2 = Sprite(Texture.from_file("img2.jpg"))
             except IOError:
-              print("Erreur chargement image") # à modifier pour avoir une solution de secours et continuer le prog
+                print("Erreur chargement image") # à modifier pour avoir une solution de secours et continuer le prog
 
             # configure la vue 
             view = View()
             view.reset(Rectangle((50, 50), (550, 550)))
             #view.center((200, 200)) #todo: centrer la vue sur le centre de rotation, il faudra surement definir une taille d'img et fenetre constantes
+
+            self.core.logger.p_log('(SFML) init')
 
         except:
             self.core.logger.p_log('(SFML) init error', error=exc_info())
@@ -132,23 +134,23 @@ class daemon_visuels(Thread):
                 window.close()
                 pass
            
-           self.a = self.a+1 # émule donnée arduino ou pc
+            self.a = self.a+1 # émule donnée arduino ou pc
               
-           if (self.a % 100 == 0):
+            if (self.a % 100 == 0):
                secousse(2)
-            
-           if (self.a==100): # todo: modifier le max de taille de texture qui est actuellement 8192x8192
+
+            if (self.a==100): # todo: modifier le max de taille de texture qui est actuellement 8192x8192
                #choixImage("img2") #permet de demander l'image selon un code numerique, ex: 001, 002, etc ; todo: ne marche pas (var glob)
                #couleur(r, v, b, f)
                transition(255,255,255,255)
 
 
-           view.rotate(0.01)
+            view.rotate(0.01)
 
-           #view.zoom(1.0001) # zoom arrière lent
-           view.zoom(0.9996) # zoom avant lent
-           
-           dessiner() 
+            #view.zoom(1.0001) # zoom arrière lent
+            view.zoom(0.9996) # zoom avant lent
+
+            dessiner() 
 
 
 

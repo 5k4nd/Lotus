@@ -3,6 +3,7 @@
 from daemons.input_arduino import daemon_arduino
 from daemons.output_audio import daemon_audio
 from daemons.output_graphic import daemon_curses
+from daemons.output_sfml import daemon_visuels
 
 from threading import Thread
 
@@ -42,7 +43,7 @@ class core(Thread):
         try:
             # on lance le processus qui gère l'arduino
             self.d_arduino = daemon_arduino(
-                core_ref=self,
+                core_ref=self, 
                 arduino_port=self.arduino_port,
                 arduino_speed=self.arduino_speed,
             )
@@ -54,11 +55,11 @@ class core(Thread):
             )
             self.d_audio.start()
 
-            # on lance le processus qui gère l'audio
-            self.d_audio = daemon_audio(
-                core_ref=self,
-            )
-            self.d_audio.start()            
+            # on lance le processus qui gère la sfml
+            # self.d_sfml = daemon_visuels(
+            #     core_ref=self,
+            # )
+            # self.d_sfml.start()            
 
             # on lance l'interface ncurses si l'utilisateur le veut
             if self.ncurses:
@@ -92,6 +93,12 @@ class core(Thread):
                         elif current_entry == 259:
                             self.d_arduino.data['capteur1'] += 10
                             self.last_entry = str(current_entry)
+                        elif current_entry == 97:
+                            self.d_audio.current = "ambiance"
+                        elif current_entry == 122:
+                            self.d_audio.current = "deux"
+                        elif current_entry == 101:
+                            self.d_audio.current = "trois"
                     else:
                         foo = 42
                         # toutes les touches spéciales !
@@ -108,6 +115,7 @@ class core(Thread):
         # on tue tous les processus, le plus proprement possible...
         self.d_audio._Thread__stop()
         self.d_arduino._Thread__stop()
+        # self.d_sfml._Thread__stop()
 
         if self.ncurses:
             self.d_curses._Thread__stop()

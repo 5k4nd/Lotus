@@ -38,7 +38,7 @@ class daemon_arduino(Thread):
     def run(self):
         while 1:
             sleep(.01)
-            self.core.logger.p_log('(CAPTEUR1): ' + str(self.data['capteur1']))
+            # self.core.logger.p_log('(CAPTEUR1): ' + str(self.data['capteur1']))
             if not self.fake:
                 try:
                     # listen from arduino
