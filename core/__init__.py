@@ -94,14 +94,14 @@ class core(Thread):
                             self.d_arduino.data['capteur1'] += 10
                             self.last_entry = str(current_entry)
                         elif current_entry == ord('a'):
-                            self.d_audio.current = "ambiance"
+                            self.d_audio.current = "scene0"
                         elif current_entry == ord('z'):
                             self.d_audio.current = "scene1"
                         elif current_entry == ord('e'):
                             self.d_audio.current = "scene2"
                     else:
                         foo = 42
-                        # toutes les touches spéciales !
+                        # toutes les touches spéciales sont ici !
             else:
                 # instruction principale si ncurses est désactivé
                 print 'press ENTER to quit'
