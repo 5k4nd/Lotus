@@ -1,6 +1,12 @@
 #!/usr/bin/python2
 # -*-coding:utf-8 -*
 
+"""
+ATTENTION
+CETTE CLASSE N'EST UTILISÉE QUE POUR LES TESTS !
+"""
+
+
 import serial #library to interact with serial port.. very similar to arduino version
 from time import sleep #for delays
 
