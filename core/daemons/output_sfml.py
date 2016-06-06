@@ -77,7 +77,7 @@ class Image():
             self.dessiner(window, view, img1, img2)
             
     def apparitionFondu(self, window, view, ROTATION, ZOOM, SLEEP, img1, img2): # transition en fondu vers l'image
-        while (self.rouge!=255 or self.vert!=255 or self.bleu!=255 or self.fondu!=255):
+        while (self.rouge!=255 or self.vert!=255 or self.bleu!=255 or self.fondu!=150):
             sleep(SLEEP)
             if (self.rouge!=255):
                 self.rouge+=1
@@ -85,7 +85,7 @@ class Image():
                 self.vert+=1
             if (self.bleu!=255):
                 self.bleu+=1
-            if (self.fondu!=255):
+            if (self.fondu!=150):
                 self.fondu+=1
             view.rotate(ROTATION)
             view.zoom(ZOOM) # zoom avant lent
@@ -110,6 +110,7 @@ class daemon_visuels(Thread):
 		self.core = core_ref
 		self.must_end = False
 		self.image1 = "data/visuel/img.jpg"
+		self.image2 = "data/visuel/img3.jpg"
 
     def run(self):
         self.core.logger.p_log('(SFML) COUCOU')
@@ -183,8 +184,8 @@ class daemon_visuels(Thread):
                 
                 elif (ambiance == 1):
                     # ambiance bataille rouge/bleu
-                    img1 = Image(self.image1)
-                    img2 = Image(self.image1)
+                    img1 = Image(self.image2)
+                    img2 = Image(self.image2)
                     img1.setCouleur(0, 100, 255);
                     img2.setCouleur(255, 100, 0);
                     alternance = True # une fonction appelée à chaque boucle
