@@ -30,12 +30,12 @@ class Image():
         except:
             print "impossible de charger l'image"
 
-    def dessiner(self, window, view, img1): # pour afficher les modifications
+    def dessiner(self, window, view, img1, img2): # pour afficher les modifications
     # attention cette fonction est dupliquée !
         window.view = view
         window.clear()
         window.draw(img1.img) # image du fond
-        window.draw(img1.img) # image par dessus
+        window.draw(img2.img) # image par dessus
         window.display()
             
     def secousse(self, amplitude): # simule une secousse (tremblement de l'img)
@@ -60,7 +60,7 @@ class Image():
     def couleur(self): # pour modifier la couleur globale de l'image, et donc l'assortir à l'ambiance
         self.img.color = Color(self.rouge, self.vert, self.bleu, self.fondu) 
         
-    def disparitionFondu(self, window, view, ROTATION, ZOOM, SLEEP, img1): # transition en fondu vers transparence
+    def disparitionFondu(self, window, view, ROTATION, ZOOM, SLEEP, img1, img2): # transition en fondu vers transparence
         while (self.rouge!=0 or self.vert!=0 or self.bleu!=0 or self.fondu!=0):
             sleep(SLEEP)
             if (self.rouge!=0):
@@ -74,9 +74,9 @@ class Image():
             view.rotate(ROTATION)
             view.zoom(ZOOM) # zoom avant lent
             self.couleur()
-            self.dessiner(window, view, img1)
+            self.dessiner(window, view, img1, img2)
             
-    def apparitionFondu(self, window, view, ROTATION, ZOOM, SLEEP, img1): # transition en fondu vers l'image
+    def apparitionFondu(self, window, view, ROTATION, ZOOM, SLEEP, img1, img2): # transition en fondu vers l'image
         while (self.rouge!=255 or self.vert!=255 or self.bleu!=255 or self.fondu!=255):
             sleep(SLEEP)
             if (self.rouge!=255):
@@ -90,7 +90,7 @@ class Image():
             view.rotate(ROTATION)
             view.zoom(ZOOM) # zoom avant lent
             self.couleur()
-            self.dessiner(window, view, img1)
+            self.dessiner(window, view, img1, img2)
 
 
 
@@ -106,26 +106,26 @@ class daemon_visuels(Thread):
     """
 
     def __init__(self, core_ref):
-        Thread.__init__(self)
-        self.core = core_ref
-        self.must_end = False
-        self.image1 = "data/visuel/img.jpg"
+		Thread.__init__(self)
+		self.core = core_ref
+		self.must_end = False
+		self.image1 = "data/visuel/img.jpg"
 
     def run(self):
         self.core.logger.p_log('(SFML) COUCOU')
 
-        def dessiner(window, view, img1): # pour afficher les modifications
+        def dessiner(window, view, img1, img2): # pour afficher les modifications
             window.view = view
             window.clear()
             window.draw(img1.img) # image du fond
-            window.draw(img1.img) # image par dessus
+            window.draw(img2.img) # image par dessus
             window.display()
 
-        def alterner(temps, window, view, ROTATION, ZOOM, SLEEP, img1):
+        def alterner(temps, window, view, ROTATION, ZOOM, SLEEP, img1, img2):
             if (temps % 100 == 0):
-                img2.apparitionFondu(window, view, ROTATION, ZOOM, SLEEP, img1)
+                img2.apparitionFondu(window, view, ROTATION, ZOOM, SLEEP, img1, img2)
             elif (temps % 50 == 0):
-                img2.disparitionFondu(window, view, ROTATION, ZOOM, SLEEP, img1)
+                img2.disparitionFondu(window, view, ROTATION, ZOOM, SLEEP, img1, img2)
         '''
         exemple:
         img1 est bleue
@@ -211,7 +211,7 @@ class daemon_visuels(Thread):
                 
                 
                 if (alternance):
-                    alterner(temps, window, view, ROTATION, ZOOM, SLEEP, img1)
+                    alterner(temps, window, view, ROTATION, ZOOM, SLEEP, img1, img2)
                 
                 view.rotate(ROTATION)
 
@@ -220,7 +220,7 @@ class daemon_visuels(Thread):
                 sleep(SLEEP)
 
 
-                dessiner(window, view, img1)
+                dessiner(window, view, img1, img2)
             except:
                 self.core.logger.p_log('(SFML) error', error=exc_info())
 
