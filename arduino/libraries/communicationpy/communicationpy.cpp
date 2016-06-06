@@ -1,12 +1,13 @@
 #include "communicationpy.h"
 
 
-
-inline void communicationpy::ArdToPC(String nomVar, uint8_t valVar )
+ void communicationpy::ArdToPC(String nomVar, uint8_t valVar )
 {
+  Serial.print("{'") ;
   Serial.print(nomVar) ;
-  Serial.println("var") ;
-  Serial.println(valVar) ;
+  Serial.print("var' : ") ;
+  Serial.print(valVar) ;
+  Serial.println("}") ;
 }
 
 

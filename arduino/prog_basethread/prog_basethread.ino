@@ -186,7 +186,7 @@ inline bool mesure_tactile()
 
 ThreadController controle = ThreadController() ;
 
-Thread communication = Thread() ;
+Thread routine = Thread() ;
 Thread evenement = Thread() ;
 
 communicationpy command = communicationpy() ;
@@ -197,12 +197,12 @@ void setup()
   
   Serial.begin(115200);// début de la communication avec l'ordinateur avec une vitesse de 115200 (à synchroniser avec l'ordinateur)
   petale1.set_CS_AutocaL_Millis(0xFFFFFFFF) ; // initialisation du capteur capacitif du lotus
+  
 
+  routine.onRun(commande_bandeau) ;
+  routine.setInterval(500) ;
 
-  communication.onRun(commande_bandeau) ;
-  communication.setInterval(500) ;
-
-  controle.add(&communication) ;
+  controle.add(&routine) ;
 }
 
 
@@ -287,15 +287,13 @@ void loop()
    Le programme qui tourne en boucle ne fait que discuter avec le PC. il et régulièrement interrompu pour modifier les valeurs du bandeau led
 */
 {
-  
+  controle.run() ;
   int temp = ambiance ;
-  noInterrupts() ;
   ambiance = command.PCToArd() ;
-  interrupts() ;
-  if (ambiance >= 10) // on passe dans les routines secondaires
+  if (ambiance >= 10) // on passe dans les événements
   {
     evenement.onRun(evenement_bandeau) ;
-    evenement.setInterval(1) ;
+    evenement.setInterval(50) ;
 
     controle.add(&evenement) ;
   }
@@ -303,9 +301,8 @@ void loop()
 
   mesure_ultrason() ;
   int lotus = mesure_tactile() ;
-  noInterrupts() ;
   command.CaptToPC(capt1, capt2, capt3, capt4, lotus) ;
-  interrupts() ;
+
  
 }
 
@@ -323,14 +320,15 @@ void commande_bandeau()
     */
     case 0 ://avant d'avoir été touché une première fois
 
-
+      
       increment++ ;
+      command.ArdToPC("boucle0", increment) ;
       valrouge = (increment % 255) * 0.2 + capt1 - 25 ; // l'intensité varie périodiquement avec une phase décalée d'un tiers pour chaque couleur de led.
       valbleu = (increment + 85) % 255 * 0.2 + capt1 - 25 ; // l'intensité des led est compris entre capt1-25 et capt1+25
       valvert = (increment + 170) % 255 * 0.2 + capt1 - 25 ;
       bandeau_pilier_1.ledpwmRGB(int(valrouge), int(valvert), int(valbleu)) ;
-      communication.setInterval(50) ;
-      controle.add(&communication) ;
+      routine.setInterval(50) ;
+      controle.add(&routine) ;
       break ;
 
     /*Scène de combat :
@@ -341,13 +339,14 @@ void commande_bandeau()
        les bandeaux du bas vont gagne en intensité en fonction du bruit
     */
     case 1 :
-
+      increment++ ;
+      command.ArdToPC("boucle1", increment) ;
       valrouge = (sin(increment * 2 * PI / 255) + 1) * capt1 + capt2 ; // on prend une fonction périodique entre 0 et 2 qu'on multiplie avec la distance du capteur principal.
       valbleu = (sin(byte(increment + 123) * 2 * PI / 255) + 1) * capt1 + capt3 ; // cette fonction va faire fluctuer les couleurs rouges et bleu sur les bandeaux intermédiaires.
       bandeau_pilier_1.ledpwm(int(valrouge), Couleur::rouge) ;
       bandeau_pilier_1.ledpwm(int(valrouge), Couleur::bleu) ;
-      communication.setInterval(50) ;
-      controle.add(&communication) ;
+      routine.setInterval(capt1) ;
+      controle.add(&routine) ;
       break ;
 
 
@@ -364,7 +363,7 @@ void evenement_bandeau()
   switch (ambiance)
   {
     case 20 :
-
+    
       if(increment++ == 255) 
       {
         controle.remove(&evenement) ;
