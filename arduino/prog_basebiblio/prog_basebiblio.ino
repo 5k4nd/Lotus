@@ -16,7 +16,7 @@ unsigned int temps ;
 
 int ambiance = 0 ; //chaque valeur de la variable correspond à une ambiance
 byte increment = 0 ; // cette variable pernet de faire une routine par rapport au temps
-
+byte test_inc[] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30} ;
 //variables des mesures de couleur à envoyer
 float valrouge ;
 float valbleu ;
@@ -177,23 +177,19 @@ unsigned int lotus = 0 ;
 
 
 //
-void mesure_tactile() 
+int mesure_tactile() 
 {
-  lotus += petale1.capacitiveSensor(30)>TPS_DETECTION ;
-  lotus += 2*petale2.capacitiveSensor(30)>TPS_DETECTION ;
-  lotus += 4*petale3.capacitiveSensor(30)>TPS_DETECTION ;
-  lotus += 8*petale4.capacitiveSensor(30)>TPS_DETECTION ;
+  
+  int lotus = petale1.capacitiveSensor(30)>TPS_DETECTION ;
+
+  return lotus ;
 }
 #endif
 /******************************************************************************************************/
 
 
-
-void envoyer()
-{
-  
-}
-
+communicationpy command = communicationpy() ;
+unsigned long truc = 0 ;
 void setup()
 {
 
@@ -221,7 +217,6 @@ void setup()
 
 
 void loop() {
-  Serial.println("pas content") ;
   if (temps+delais>millis())
   {
     switch(ambiance)
@@ -234,12 +229,10 @@ void loop() {
 
        
         increment++ ;
-        valrouge = (increment)*0.2+capt1-25 ; // l'intensité varie périodiquement avec une phase décalée d'un tiers pour chaque couleur de led.
-        valbleu = (increment+85)*0.2+capt1-25 ; // l'intensité des led est compris entre capt1-25 et capt1+25 
-        valvert = (increment+170)*0.2+capt1-25 ;
-        bandeau_pilier_1.ledpwm(int(valrouge),Couleur::rouge) ; //  
-        bandeau_pilier_1.ledpwm(int(valvert),Couleur::vert) ;
-        bandeau_pilier_1.ledpwm(int(valbleu),Couleur::bleu) ;
+        if (increment == 30) increment = 0 ;
+        bandeau_pilier_1.ledpwm(int(test_inc[increment]+capt1),Couleur::rouge) ; //  
+        bandeau_pilier_1.ledpwm(int(test_inc[increment]+capt1),Couleur::vert) ;
+        bandeau_pilier_1.ledpwm(int(test_inc[increment]+capt1),Couleur::bleu) ;
         
         delais = 50 ; 
         break ;
@@ -263,18 +256,24 @@ void loop() {
     }
   
   temps = millis() ;
-  
   }
-  serialEvent() ;
-  delay(1000) ;
-}
+  int machin = millis() ;
+  //int temp = ambiance ;
+  ambiance = command.PCToArd() ;
 
+ // mesure_ultrason() ;
+  command.CaptToPC(capt1, capt2, capt3, capt4, int(mesure_tactile())) ;
+  Serial.println(millis()-truc) ;
+  Serial.println(millis()-machin) ;
+  truc = millis() ;
+
+}
+/*
 
 void serialEvent() {
-  unsigned long machin = millis() ;
-  ambiance = communicationpy::PCToArd() ;
+  ambiance = command.PCToArd() ;
   mesure_ultrason() ;
   mesure_tactile() ;
-  communicationpy::CaptToPC(capt1, capt2, capt3, capt4, lotus) ;
-  Serial.println(uint8_t(machin-millis())) ;
-}
+  command.CaptToPC(capt1, capt2, capt3, capt4, lotus) ;
+  
+}*/

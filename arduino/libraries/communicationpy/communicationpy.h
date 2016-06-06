@@ -9,11 +9,14 @@
 
 class communicationpy
 {
+    uint8_t ambiance ;
   public:
-    communicationpy() {};
-    static  int PCToArd() ;
-    static void ArdToPC(String nomVar, uint8_t valVar ) ;
-    static  void CaptToPC(uint8_t capteur1, uint8_t capteur2, uint8_t capteur3, uint8_t capteur4, uint8_t lotus) ;
+    communicationpy():ambiance(0) {};
+    int getambiance() const { return this->ambiance ;} ;
+    void setambiance(uint8_t amb) { this->ambiance = amb ;};  
+    int PCToArd() ;
+    void ArdToPC(String nomVar, uint8_t valVar ) ;
+    void CaptToPC(uint8_t capteur1, uint8_t capteur2, uint8_t capteur3, uint8_t capteur4, uint8_t lotus) ;
     
 } ;
 
