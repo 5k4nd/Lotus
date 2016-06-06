@@ -65,20 +65,26 @@ class daemon_curses(Thread):
                 )
 
                 self.scr.addstr(6, 1, "donnees arduino : ")
-                capteur1 = int(self.core.d_arduino.data['capteur1'])
+                capteur1 = int(self.core.d_arduino.data['capteur1var'])
                 self.scr.addstr(6, 19,
                     str(capteur1) + " "*(3-len(str(capteur1)))
                 )
 
                 self.scr.addstr(7, 10, "volume : ")
-                self.scr.addstr(7, 19,str(
+                self.scr.addstr(7, 19, str(
                         self.core.d_audio.volume
                     )
                 )
 
                 self.scr.addstr(9, 1, "ambiance actuelle (scene) : ")
+                self.scr.addstr(9, 29, str(self.core.d_audio.current))
                 self.scr.addstr(10, 1, "(changez avec les touches a pour la scene0, z pour la scene1, e pour la scene2, etc)")
-                self.scr.addstr(9, 29,str(self.core.d_audio.current))
+
+                self.scr.addstr(11, 1, "ambiance arduino (scene) : ")
+                self.scr.addstr(11, 29, str(self.core.d_arduino.data['ambiancevar']))
+
+                # self.scr.addstr(9, 29,str(self.core.d_arduino.dicoarduino['capteur1']))
+
 
             except:
                 self.core.logger.p_log('(GRAPHIC) SCR_ERROR', error=exc_info())

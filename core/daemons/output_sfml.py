@@ -113,7 +113,7 @@ class daemon_visuels(Thread):
 		self.image2 = "data/visuel/img3.jpg"
 
     def run(self):
-        self.core.logger.p_log('(SFML) COUCOU')
+        self.core.logger.p_log('(SFML) run main loop')
 
         def dessiner(window, view, img1, img2): # pour afficher les modifications
             window.view = view

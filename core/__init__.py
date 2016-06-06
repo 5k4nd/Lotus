@@ -97,8 +97,10 @@ class core(Thread):
                             self.d_audio.current = "scene0"
                         elif current_entry == ord('z'):
                             self.d_audio.current = "scene1"
+                            self.d_arduino.current = 0
                         elif current_entry == ord('e'):
                             self.d_audio.current = "scene2"
+                            self.d_arduino.current = 1
                     else:
                         foo = 42
                         # toutes les touches spéciales sont ici !
