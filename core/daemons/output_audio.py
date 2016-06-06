@@ -44,7 +44,7 @@ class daemon_audio(Thread):
             while 1:
                 sleep(0.1)
                 # on modifie le volume
-                self.volume = 1 - ( int(self.core.d_arduino.data['capteur1']) / 200.0 )
+                self.volume = 1 - ( int(self.core.d_arduino.data['capteur1var']) / 200.0 )
                 mixer.music.set_volume(
                     self.volume
                 )
@@ -52,7 +52,7 @@ class daemon_audio(Thread):
                 # si l'ambiance courante n'est plus la scène de départ
                 if self.current != 'scene0':
                     # on lance la nouvelle scene pendant 30 secondes avant de revenir à la scène de départ
-                    self.lancer_scene(self.current, 30)
+                    self.lancer_scene(self.current, 5)
                     self.current = 'scene0'
 
 

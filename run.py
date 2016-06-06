@@ -17,7 +17,7 @@ from core import core
 # n'oubliez pas de définir vos ports arduino !
 def launch(scr):
     core(
-        arduino_port='/dev/ttyACM0',
+        arduino_port='/dev/ttyACM2',
         arduino_speed=115200,
         SCR=scr,
         ncurses=run_with_curses

@@ -5,7 +5,11 @@
 {
   Serial.print("{'") ;
   Serial.print(nomVar) ;
+<<<<<<< HEAD
   Serial.print("var' : ") ;
+=======
+  Serial.print("var':") ;
+>>>>>>> 127d27bcc5b5a57cadd08ed9a6a3f93f2674fb7c
   Serial.print(valVar) ;
   Serial.println("}") ;
 }
