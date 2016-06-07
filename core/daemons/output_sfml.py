@@ -38,18 +38,18 @@ class Image():
         window.draw(img2.img) # image par dessus
         window.display()
             
-    def secousse(self, amplitude): # simule une secousse (tremblement de l'img)
+    def secousse(self, amplitude, SLEEP, window, view, img1, img2): # simule une secousse (tremblement de l'img)
         view.move(amplitude,amplitude)
-        dessiner()
+        self.dessiner(window, view, img1, img2)
         sleep(SLEEP)
         view.move(-amplitude,-amplitude)
-        dessiner()
+        self.dessiner(window, view, img1, img2)
         sleep(SLEEP)
         view.move(amplitude,amplitude)
-        dessiner()
+        self.dessiner(window, view, img1, img2)
         sleep(SLEEP)
         view.move(-amplitude,-amplitude)
-        dessiner()
+        self.dessiner(window, view, img1, img2)
         sleep(SLEEP)
     
     def setCouleur(self, rouge, vert, bleu):
@@ -61,14 +61,8 @@ class Image():
         self.img.color = Color(self.rouge, self.vert, self.bleu, self.fondu) 
         
     def disparitionFondu(self, window, view, ROTATION, ZOOM, SLEEP, img1, img2): # transition en fondu vers transparence
-        while (self.rouge!=0 or self.vert!=0 or self.bleu!=0 or self.fondu!=0):
+        while (self.fondu!=0):
             sleep(SLEEP)
-            if (self.rouge!=0):
-                self.rouge-=1
-            if (self.vert!=0):
-                self.vert-=1
-            if (self.bleu!=0):
-                self.bleu-=1
             if (self.fondu!=0):
                 self.fondu-=1
             view.rotate(ROTATION)
@@ -77,15 +71,9 @@ class Image():
             self.dessiner(window, view, img1, img2)
             
     def apparitionFondu(self, window, view, ROTATION, ZOOM, SLEEP, img1, img2): # transition en fondu vers l'image
-        while (self.rouge!=255 or self.vert!=255 or self.bleu!=255 or self.fondu!=150):
+        while (self.fondu!=150):
             sleep(SLEEP)
-            if (self.rouge!=255):
-                self.rouge+=1
-            if (self.vert!=255):
-                self.vert+=1
-            if (self.bleu!=255):
-                self.bleu+=1
-            if (self.fondu!=150):
+            if (self.fondu!=255):
                 self.fondu+=1
             view.rotate(ROTATION)
             view.zoom(ZOOM) # zoom avant lent
@@ -110,7 +98,8 @@ class daemon_visuels(Thread):
 		self.core = core_ref
 		self.must_end = False
 		self.image1 = "data/visuel/img.jpg"
-		self.image2 = "data/visuel/img3.jpg"
+		self.image2 = "data/visuel/black.jpg"
+		self.image3 = "data/visuel/img3.jpg"
 
     def run(self):
         self.core.logger.p_log('(SFML) run main loop')
@@ -123,15 +112,15 @@ class daemon_visuels(Thread):
             window.display()
 
         def alterner(temps, window, view, ROTATION, ZOOM, SLEEP, img1, img2):
-            if (temps % 100 == 0):
+            if (temps % 500 == 0): # le modulo devra être remplacé par un test d'égalité
                 img2.apparitionFondu(window, view, ROTATION, ZOOM, SLEEP, img1, img2)
-            elif (temps % 50 == 0):
+            elif (temps % 250 == 0): # le modulo devra être remplacé par un test d'égalité
                 img2.disparitionFondu(window, view, ROTATION, ZOOM, SLEEP, img1, img2)
         '''
         exemple:
-        img1 est bleue
-        img2 est rouge
-        img2 disparait et apparait: on voit l'image passer du rouge au bleu etc
+        img1 est bleue, dessinée en premier
+        img2 est rouge, dessinée par dessus img1
+        img2 disparait et apparait: on voit l'image passer du rouge au bleu, etc
         '''
 
 
@@ -181,34 +170,42 @@ class daemon_visuels(Thread):
                     img1 = Image(self.image1)
                     img2 = Image(self.image1)
                     alternance = False
+                    ambiance = -1 # emule donnee revenant à -1
                 
                 elif (ambiance == 1):
                     # ambiance bataille rouge/bleu
-                    img1 = Image(self.image2)
-                    img2 = Image(self.image2)
-                    img1.setCouleur(0, 100, 255);
-                    img2.setCouleur(255, 100, 0);
+                    img1 = Image(self.image3)
+                    img2 = Image(self.image3)#TODO: supprimer la transition de couleur brutale à l'initialisation de l'ambiance
+                    img1.setCouleur(255, 0, 0); # on met un filtre bleu sur img1
+                    img2.setCouleur(0, 0, 255); # et un filtre rouge sur img2
                     alternance = True # une fonction appelée à chaque boucle
                     ambiance = -1 # emule donnee revenant à -1
                     
                 elif (ambiance == 2):
                     # ambiance mer
-                    img1 = Image(self.image1)
-                    img2 = Image(self.image1)
+                    img1 = Image(self.image2)
+                    img2 = Image(self.image2)
                     alternance = False
+                    ambiance = -1 # emule donnee revenant à -1
                 # si aucune des ambiances programmées ne correspond à la donnée reçue, on ne modifie rien
                 
-
+				
 
                 # émule donnée arduino ou pc
                 pic += 1 
                 temps += 1
+                
+                ''' émule changement d'ambiance
+                if (temps%300==0):
+					img1.disparitionFondu(window, view, ROTATION, ZOOM, SLEEP, img1, img2)
+					img2.disparitionFondu(window, view, ROTATION, ZOOM, SLEEP, img1, img2)
+					ambiance = 2
+				'''
 
 
-
-                # if (pic % 200 == 0):
-                #    img1.secousse(2)
-                #    img2.secousse(2)
+                if (pic % 200 == 0): # le modulo devra être remplacé par un test d'égalité
+                   img1.secousse(2, SLEEP,window, view, img1, img2)
+                   img2.secousse(2, SLEEP,window, view, img1, img2)
                 
                 
                 if (alternance):
@@ -226,3 +223,5 @@ class daemon_visuels(Thread):
                 self.core.logger.p_log('(SFML) error', error=exc_info())
 
         window.close()
+        
+        # TODO: prévoir une fonction de fin d'ambiance, qui utilisera la transition en fondu
