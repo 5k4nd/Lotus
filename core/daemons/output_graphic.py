@@ -76,12 +76,12 @@ class daemon_curses(Thread):
                     )
                 )
 
-                self.scr.addstr(9, 1, "ambiance actuelle (scene) : ")
-                self.scr.addstr(9, 29, str(self.core.d_audio.current))
-                self.scr.addstr(10, 1, "(changez avec les touches a pour la scene0, z pour la scene1, e pour la scene2, etc)")
+                self.scr.addstr(9, 1, "ambiance actuelle (python) : ")
+                self.scr.addstr(9, 30, str(self.core.d_audio.current))
+                self.scr.addstr(10, 1, "(changez avec les touches \"a\" pour la scene0, \"z\" pour la scene1, \"e\" pour la scene2, etc)")
 
-                self.scr.addstr(11, 1, "ambiance arduino (scene) : ")
-                self.scr.addstr(11, 29, str(self.core.d_arduino.data['ambiancevar']))
+                self.scr.addstr(12, 1, "ambiance actuelle (arduino) : ")
+                self.scr.addstr(12, 31, str(self.core.d_arduino.data['ambiancevar']))
 
                 # self.scr.addstr(9, 29,str(self.core.d_arduino.dicoarduino['capteur1']))
 

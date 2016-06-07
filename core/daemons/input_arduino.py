@@ -21,7 +21,7 @@ class daemon_arduino(Thread):
 
     def __init__(self, core_ref, arduino_port, arduino_speed):
         Thread.__init__(self)
-        self.fake = False
+        self.fake = True  # simule les entrées de l'arduino lorsque mis à True (flèches haut et bas pour la distance de capteur1)
         self.MAX = 100  # valeur max du capteur pour l'initialisation : À SUPPRIMER après tests !
         self.core = core_ref
         self.erreurs = "none"

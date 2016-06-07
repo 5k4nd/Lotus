@@ -88,18 +88,18 @@ class core(Thread):
                         if current_entry == 27:  # <échap>  # ord('q')
                             break
                         elif current_entry == 258:
-                            self.d_arduino.data['capteur1'] -= 10
+                            self.d_arduino.data['capteur1var'] -= 10
                             self.last_entry = str(current_entry)
                         elif current_entry == 259:
-                            self.d_arduino.data['capteur1'] += 10
+                            self.d_arduino.data['capteur1var'] += 10
                             self.last_entry = str(current_entry)
                         elif current_entry == ord('a'):
-                            self.d_audio.current = "scene0"
+                            self.d_audio.current = 0
                         elif current_entry == ord('z'):
-                            self.d_audio.current = "scene1"
+                            self.d_audio.current = 1
                             self.d_arduino.current = 0
                         elif current_entry == ord('e'):
-                            self.d_audio.current = "scene2"
+                            self.d_audio.current = 2
                             self.d_arduino.current = 1
                     else:
                         foo = 42

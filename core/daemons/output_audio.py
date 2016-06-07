@@ -24,12 +24,12 @@ class daemon_audio(Thread):
         self.core = core_ref
         self.volume = 0
         self.ambiances = {
-            'scene0': "data/audio/naaru.mp3",
-            'scene1': "data/audio/scene_1_colere.mp3",
-            'scene2': "data/audio/scene_4_apaisement.mp3"
+            0: "data/audio/naaru.mp3",
+            1: "data/audio/scene_1_colere.mp3",
+            2: "data/audio/scene_4_apaisement.mp3"
         }
-        self.current = "scene0"
-        self.old = "scene0"
+        self.current = 0
+        self.old = 0
         try:
             mixer.init()
             self.core.logger.p_log('(AUDIO) init')
@@ -50,10 +50,10 @@ class daemon_audio(Thread):
                 )
 
                 # si l'ambiance courante n'est plus la scène de départ
-                if self.current != 'scene0':
+                if self.current != 0:
                     # on lance la nouvelle scene pendant 30 secondes avant de revenir à la scène de départ
                     self.lancer_scene(self.current, 5)
-                    self.current = 'scene0'
+                    self.current = 0
 
 
         except:
@@ -89,7 +89,7 @@ class daemon_audio(Thread):
             mixer.music.set_volume(self.volume)
 
         mixer.music.stop()
-        mixer.music.load(self.ambiances['scene0'])
+        mixer.music.load(self.ambiances[0])
         mixer.music.play()
         for i in range(0, int(backup_volume*100), 1):
             sleep(.1)
