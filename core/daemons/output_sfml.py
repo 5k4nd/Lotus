@@ -166,7 +166,7 @@ class daemon_visuels(Thread):
                 ##########Ambiances############
 
                 # on récupère à chaque boucle la donnée PC - self.d_audio.current
-                if (self.core.d_audio.current != self.core.d_audio.old): # problème: reload la scène trop souvent?!
+                if (self.core.d_audio.current != self.core.d_audio.old):
 					img2.disparitionFondu(window, view, ROTATION, ZOOM, SLEEP, img1, img2)
 					img1.disparitionFondu(window, view, ROTATION, ZOOM, SLEEP, img1, img2)
 					if (self.core.d_audio.current == 0):
