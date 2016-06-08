@@ -98,7 +98,7 @@ class daemon_visuels(Thread):
 		self.core = core_ref
 		self.must_end = False
 		self.image1 = "data/visuel/img.jpg"
-		self.image2 = "data/visuel/black.jpg"
+		self.image2 = "data/visuel/img2.jpg"
 		self.image3 = "data/visuel/img3.jpg"
 
     def run(self):
@@ -136,9 +136,7 @@ class daemon_visuels(Thread):
             height = 600
 
             # émule la donnée de l'arduino ou du pc
-            pic = 0 
-            ambiance = 1
-
+            pic = 0
             # var de temps pour par exemple bataille rouge/bleu
             temps = 0 
 
@@ -150,9 +148,15 @@ class daemon_visuels(Thread):
             view.reset(Rectangle((50, 50), (550, 550)))
             #view.center((200, 200)) #todo: centrer la vue sur le centre de rotation, il faudra surement definir une taille d'img et fenetre constantes
             self.core.logger.p_log('(SFML) init')
+            
+            # ambiance de base
+            img1 = Image(self.image1)
+            img2 = Image(self.image1)
+            alternance = False
 
         except:
             self.core.logger.p_log('(SFML) init error', error=exc_info())
+
 
 
         ##########Boucle principale:########## 
@@ -161,33 +165,33 @@ class daemon_visuels(Thread):
             try:
                 ##########Ambiances############
 
-                #ambiance = PCtoPC(); # on récupère à chaque boucle la donnée PC - TODO: PCtoPC()
-                if (ambiance == -1):
-                    # s'il n'y a pas de nouvelle donnée d'ambiance (-1) on ne fait rien
-                    pass
-                elif (ambiance == 0):
-                    # ambiance de base
-                    img1 = Image(self.image1)
-                    img2 = Image(self.image1)
-                    alternance = False
-                    ambiance = -1 # emule donnee revenant à -1
-                
-                elif (ambiance == 1):
-                    # ambiance bataille rouge/bleu
-                    img1 = Image(self.image3)
-                    img2 = Image(self.image3)#TODO: supprimer la transition de couleur brutale à l'initialisation de l'ambiance
-                    img1.setCouleur(255, 0, 0); # on met un filtre bleu sur img1
-                    img2.setCouleur(0, 0, 255); # et un filtre rouge sur img2
-                    alternance = True # une fonction appelée à chaque boucle
-                    ambiance = -1 # emule donnee revenant à -1
-                    
-                elif (ambiance == 2):
-                    # ambiance mer
-                    img1 = Image(self.image2)
-                    img2 = Image(self.image2)
-                    alternance = False
-                    ambiance = -1 # emule donnee revenant à -1
-                # si aucune des ambiances programmées ne correspond à la donnée reçue, on ne modifie rien
+                # on récupère à chaque boucle la donnée PC - self.d_audio.current
+                if (self.core.d_audio.current != self.core.d_audio.old):
+					img2.disparitionFondu(window, view, ROTATION, ZOOM, SLEEP, img1, img2)
+					img1.disparitionFondu(window, view, ROTATION, ZOOM, SLEEP, img1, img2)
+					if (self.core.d_audio.current == 0):
+						# ambiance de base
+						img1 = Image(self.image1)
+						img2 = Image(self.image1)
+						alternance = False
+					
+					elif (self.core.d_audio.current == 1):
+						# ambiance bataille rouge/bleu
+						img1 = Image(self.image3)
+						img2 = Image(self.image3)#TODO: supprimer la transition de couleur brutale à l'initialisation de l'ambiance
+						img1.setCouleur(255, 0, 0); # on met un filtre bleu sur img1
+						img2.setCouleur(0, 0, 255); # et un filtre rouge sur img2
+						alternance = True # une fonction appelée à chaque boucle
+						
+					elif (self.core.d_audio.current == 2):
+						# ambiance mer
+						img1 = Image(self.image2)
+						img2 = Image(self.image2)
+						alternance = False
+					# si aucune des ambiances programmées ne correspond à la donnée reçue, on ne modifie rien
+					#réinitialiser la position de la vue
+					view.reset(Rectangle((50, 50), (550, 550)))
+			
                 
 				
 
@@ -195,12 +199,6 @@ class daemon_visuels(Thread):
                 pic += 1 
                 temps += 1
                 
-                ''' émule changement d'ambiance
-                if (temps%300==0):
-					img1.disparitionFondu(window, view, ROTATION, ZOOM, SLEEP, img1, img2)
-					img2.disparitionFondu(window, view, ROTATION, ZOOM, SLEEP, img1, img2)
-					ambiance = 2
-				'''
 
 
                 if (pic % 200 == 0): # le modulo devra être remplacé par un test d'égalité
