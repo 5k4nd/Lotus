@@ -52,7 +52,7 @@ class daemon_audio(Thread):
                 # si l'ambiance courante n'est plus la scène de départ
                 if self.current != 0:
                     # on lance la nouvelle scene pendant 30 secondes avant de revenir à la scène de départ
-                    self.lancer_scene(self.current, 5)
+                    self.lancer_scene(self.current, 20)
                     self.current = 0
 
 
@@ -75,7 +75,7 @@ class daemon_audio(Thread):
         mixer.music.stop()
         mixer.music.load(self.ambiances[ambiance])
         mixer.music.play()
-        for i in range(0, int(backup_volume*100), 1):
+        for i in range(0, int(backup_volume*100), 10):
             sleep(.1)
             self.volume = i/100.
             mixer.music.set_volume(self.volume)
@@ -91,7 +91,7 @@ class daemon_audio(Thread):
         mixer.music.stop()
         mixer.music.load(self.ambiances[0])
         mixer.music.play()
-        for i in range(0, int(backup_volume*100), 1):
+        for i in range(0, int(backup_volume*100), 10):
             sleep(.1)
             self.volume = i/100.
             mixer.music.set_volume(self.volume)

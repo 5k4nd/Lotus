@@ -47,7 +47,7 @@ class daemon_arduino(Thread):
             # self.core.logger.p_log('(CAPTEUR1): ' + str(self.data['capteur1']))
 
             # si python décide de changer d'ambiance, on avertit l'arduino
-            if self.current != self.old:
+            if ( (self.current != self.old) and not(self.fake)):
                 self.ambianceToArduino(self.current)
                 self.old = self.current
 

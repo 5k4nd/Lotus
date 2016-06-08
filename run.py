@@ -17,7 +17,7 @@ def launch(scr):
     core(
         arduino_port=ARDUINO_PORT,
         arduino_speed=ARDUINO_SPEED,
-        arduino_fake=not(simulate_arduino),
+        arduino_fake=simulate_arduino,
         SCR=scr,
         ncurses=run_with_curses
     ).start()
