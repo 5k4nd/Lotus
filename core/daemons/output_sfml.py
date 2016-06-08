@@ -71,7 +71,7 @@ class Image():
             self.dessiner(window, view, img1, img2)
             
     def apparitionFondu(self, window, view, ROTATION, ZOOM, SLEEP, img1, img2): # transition en fondu vers l'image
-        while (self.fondu!=150):
+        while (self.fondu!=255):
             sleep(SLEEP)
             if (self.fondu!=255):
                 self.fondu+=1
@@ -167,8 +167,10 @@ class daemon_visuels(Thread):
 
                 # on récupère à chaque boucle la donnée PC - self.d_audio.current
                 if (self.core.d_audio.current != self.core.d_audio.old):
+					# début de la transition:
 					img2.disparitionFondu(window, view, ROTATION, ZOOM, SLEEP, img1, img2)
 					img1.disparitionFondu(window, view, ROTATION, ZOOM, SLEEP, img1, img2)
+					
 					if (self.core.d_audio.current == 0):
 						# ambiance de base
 						img1 = Image(self.image1)
@@ -178,9 +180,9 @@ class daemon_visuels(Thread):
 					elif (self.core.d_audio.current == 1):
 						# ambiance bataille rouge/bleu
 						img1 = Image(self.image3)
-						img2 = Image(self.image3)#TODO: supprimer la transition de couleur brutale à l'initialisation de l'ambiance
-						img1.setCouleur(255, 0, 0); # on met un filtre bleu sur img1
-						img2.setCouleur(0, 0, 255); # et un filtre rouge sur img2
+						img2 = Image(self.image3)
+						img1.setCouleur(0, 0, 255); # on met un filtre bleu sur img1
+						img2.setCouleur(255, 0, 0); # et un filtre rouge sur img2
 						alternance = True # une fonction appelée à chaque boucle
 						
 					elif (self.core.d_audio.current == 2):
@@ -189,6 +191,10 @@ class daemon_visuels(Thread):
 						img2 = Image(self.image2)
 						alternance = False
 					# si aucune des ambiances programmées ne correspond à la donnée reçue, on ne modifie rien
+					
+					# fin de la transition:
+					img1.apparitionFondu(window, view, ROTATION, ZOOM, SLEEP, img1, img2)
+					img2.apparitionFondu(window, view, ROTATION, ZOOM, SLEEP, img1, img2)
 					#réinitialiser la position de la vue
 					view.reset(Rectangle((50, 50), (550, 550)))
 			
