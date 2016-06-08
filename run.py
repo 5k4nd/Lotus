@@ -5,20 +5,19 @@
 Le Lotus: alpha version.
 Licence GNU GPL v3.
     Bapt Abl, 2016.
+
 """
-# set to False pour désactiver l'interface (lourde pour certains) ncurses
-run_with_curses = True
-
 from core import core
-
+from config_lotus import *
 
 
 # fonction principale du programme
 # n'oubliez pas de définir vos ports arduino !
 def launch(scr):
     core(
-        arduino_port='/dev/ttyACM2',
-        arduino_speed=115200,
+        arduino_port=ARDUINO_PORT,
+        arduino_speed=ARDUINO_SPEED,
+        arduino_fake=not(simulate_arduino),
         SCR=scr,
         ncurses=run_with_curses
     ).start()

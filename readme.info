@@ -7,8 +7,20 @@ Codé en Python 2 et en C, l'application finale tourne simultanément sur un Ras
 
 
 
+#######################################
+######### Fichier de configuration
+#######################################
 
-Architecture du projet :
+  config_lotus.py
+
+notamment pour la configuration de l'Arduino
+
+
+
+###################################
+####### Architecture du projet
+###################################
+
 -- arduino/     contient le code arduino
 -- core/        contient le code python
 -- data/        contient l'ensemble des fichiers utilisés par le pi, notamment la musique et la vidéo
@@ -54,4 +66,13 @@ installer les modules python :
 
 pour sortir du virtualenv :
   deactivate
+
+
+
+####################################
+######### pour l'Arduino
+####################################
+
+voir le readme dans arduino/
+et n'oubliez pas de le configurer dans le fichier config_lotus.py
 

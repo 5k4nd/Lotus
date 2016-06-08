@@ -23,10 +23,11 @@ class core(Thread):
 
     '''
 
-    def __init__(self, SCR, arduino_port, arduino_speed, ncurses):
+    def __init__(self, SCR, arduino_port, arduino_speed, arduino_fake, ncurses):
         Thread.__init__(self)
         self.arduino_port = arduino_port
         self.arduino_speed = arduino_speed
+        self.arduino_fake = arduino_fake
         self.logger = LogFile('app.log')
         self.logger.initself()
         self.ncurses=ncurses
@@ -46,6 +47,7 @@ class core(Thread):
                 core_ref=self, 
                 arduino_port=self.arduino_port,
                 arduino_speed=self.arduino_speed,
+                arduino_fake=self.arduino_fake
             )
             self.d_arduino.start()
 
