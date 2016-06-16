@@ -51,8 +51,8 @@ class daemon_audio(Thread):
 
                 # si l'ambiance courante n'est plus la scène de départ
                 if self.current != 0:
-                    # on lance la nouvelle scene pendant 60 secondes avant de revenir à la scène de départ
-                    self.lancer_scene(self.current, 60)
+       # on lance la nouvelle scene pendant X secondes avant de revenir à la scène de départ
+                    self.lancer_scene(self.current, 20)
                     self.current = 0
 
 
